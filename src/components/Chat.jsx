@@ -1,11 +1,29 @@
-import { useState } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { auth } from "../config/firebase";
-import { db } from "../config/firebase";
+import { useEffect, useState } from "react";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
+import { auth, db } from "../config/firebase";
 
 export const Chat = ({ group }) => {
   const [msg, setMsg] = useState("");
+  const [msgs, setMsgs] = useState([]);
   const chatMsgRef = collection(db, "chat-messages");
+
+  useEffect(() => {
+    const queryMsg = query(chatMsgRef, where("group", "==", group));
+    onSnapshot(queryMsg, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((doc) => {
+        arr.push({ ...doc.data(), id: doc.id });
+      });
+      setMsgs(arr);
+    });
+  }, []);
 
   const handleBtnSubmit = async (e) => {
     e.preventDefault();
@@ -35,6 +53,16 @@ export const Chat = ({ group }) => {
           Submit
         </button>
       </form>
+
+      <div>
+        {msgs.map((message) => (
+          <div key={message.created} className="w-full">
+            <p>
+              {message.user}:{message.msg}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
