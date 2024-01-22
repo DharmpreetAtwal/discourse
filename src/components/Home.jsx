@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Friend from "./Friend";
 import { useRef } from "react";
 import { signOut } from "firebase/auth";
@@ -9,9 +9,16 @@ import { useNavigate } from "react-router-dom";
 const cookies = new Cookies();
 
 function Home({ userID, setIsAuth }) {
+  const [groupID, setGroupID] = useState(null);
+  const groupIDInputRef = useRef(null);
+
   const navigate = useNavigate();
 
-  const groupInputRef = useRef(null);
+  useEffect(() => {
+    if (groupID !== null) {
+      navigate("/group/:" + groupID);
+    }
+  }, [groupID]);
 
   const handleSignOut = () => {
     signOut(auth)
@@ -28,13 +35,12 @@ function Home({ userID, setIsAuth }) {
   return (
     <div>
       <button onClick={handleSignOut} className="bg-red-500">
-        {" "}
-        Sign Out{" "}
+        Sign Out
       </button>
-      <h2> Enter Your Group Name</h2>
-      <input ref={groupInputRef} className="bg-orange-500" />
+      <h2> Enter Your GroupID Name</h2>
+      <input ref={groupIDInputRef} className="bg-orange-500" />
       <button
-        onClick={() => setGroup(groupInputRef.current.value)}
+        onClick={() => setGroupID(groupIDInputRef.current.value)}
         className="bg-red-500"
       >
         Enter Discourse
