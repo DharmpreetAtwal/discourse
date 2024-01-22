@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { db } from "../config/firebase";
 
-function Friend({ userID, isAuth }) {
+function Friend({ userID }) {
   const [friends, setFriends] = useState([]);
   const [pendingFriends, setPendingFriends] = useState([]);
 
@@ -22,6 +22,7 @@ function Friend({ userID, isAuth }) {
   const usersCollectionRef = collection(db, "users");
 
   const getUserInfo = async () => {
+    console.log(userID);
     const userDoc = doc(db, "users", userID);
     const snapshot = await getDoc(userDoc);
     if (snapshot.exists()) {
@@ -32,7 +33,7 @@ function Friend({ userID, isAuth }) {
 
   useEffect(() => {
     getUserInfo();
-  }, [isAuth]);
+  }, []);
 
   const sendFriendRequest = async (email) => {
     const queryFriend = query(

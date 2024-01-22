@@ -1,11 +1,13 @@
 import { auth, db, providerGoogleAuth } from "../config/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { setDoc, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
 export const Auth = ({ setIsAuth, setUserID }) => {
+  const navigate = useNavigate();
   const signInGoogle = async () => {
     try {
       const info = await signInWithPopup(auth, providerGoogleAuth);
@@ -28,12 +30,13 @@ export const Auth = ({ setIsAuth, setUserID }) => {
       } else {
         await updateDoc(docRef, {
           pendingFriends: arrayUnion(),
-          pendingFriends: arrayUnion(),
         });
       }
     } catch (err) {
       console.error(err);
     }
+
+    navigate("/home");
   };
 
   return (
