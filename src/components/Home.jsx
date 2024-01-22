@@ -16,7 +16,7 @@ function Home({ userID, setIsAuth }) {
 
   useEffect(() => {
     if (groupID !== null) {
-      navigate("/group/:" + groupID);
+      navigate("/group/" + groupID);
     }
   }, [groupID]);
 
