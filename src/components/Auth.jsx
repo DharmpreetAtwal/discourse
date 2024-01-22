@@ -1,17 +1,38 @@
-import { auth, providerGoogleAuth } from "../config/firebase";
+import { auth, db, providerGoogleAuth } from "../config/firebase";
 import { signInWithPopup } from "firebase/auth";
+import { setDoc, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-export const Auth = ({ setIsAuth }) => {
+export const Auth = ({ setIsAuth, setUserID }) => {
   const signInGoogle = async () => {
     try {
       const info = await signInWithPopup(auth, providerGoogleAuth);
+
       cookies.set("token-auth", info.user.refreshToken);
+      cookies.set("uid", info.user.uid);
+
       setIsAuth(true);
+      setUserID(info.user.uid);
+
+      const docRef = doc(db, "users", info.user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          email: info.user.email,
+          pendingFriends: [],
+          friends: [],
+        });
+      } else {
+        await updateDoc(docRef, {
+          pendingFriends: arrayUnion(),
+          pendingFriends: arrayUnion(),
+        });
+      }
     } catch (err) {
-      console.err(err);
+      console.error(err);
     }
   };
 
