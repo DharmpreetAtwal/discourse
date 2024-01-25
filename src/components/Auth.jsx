@@ -21,15 +21,15 @@ export const Auth = ({ setIsAuth, setUserID }) => {
       const docRef = doc(db, "users", info.user.uid);
       const docSnap = await getDoc(docRef);
 
-      if (!docSnap.exists()) {
+      if (docSnap.exists()) {
+        await updateDoc(docRef, {
+          pendingFriends: arrayUnion(),
+        });
+      } else {
         await setDoc(docRef, {
           email: info.user.email,
           pendingFriends: [],
           friends: [],
-        });
-      } else {
-        await updateDoc(docRef, {
-          pendingFriends: arrayUnion(),
         });
       }
     } catch (err) {

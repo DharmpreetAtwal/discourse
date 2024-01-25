@@ -1,96 +1,32 @@
-import {
-  doc,
-  addDoc,
-  collection,
-  getDoc,
-  onSnapshot,
-  setDoc,
-  getDocs,
-  serverTimestamp,
-  query,
-  where,
-  updateDoc,
-  arrayUnion,
-} from "firebase/firestore";
-import React, { useEffect, useReducer, useRef, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { db } from "../config/firebase";
+import React, { useRef } from "react";
+import { useParams } from "react-router-dom";
+import { useGetGroup } from "../hooks/useGetGroup";
+import { useAddMember } from "../hooks/useAddMember";
+import { useSendMessage } from "../hooks/useSendMessage";
 
 function Group({ userID }) {
-  const userMessageInputRef = useRef(null);
-  const membersRef = useRef([]);
-  const addMemberInputRef = useRef(null);
-
-  const [groupMessages, setGroupMessages] = useState([]);
+  const userMessageInputRef = useRef("");
+  const addMemberInputRef = useRef("");
   const { groupID } = useParams();
 
-  const groupMessagesCollection = collection(
-    db,
-    "groups/" + groupID + "/" + "groupMessages"
-  );
-  const groupRef = doc(db, "groups", groupID);
-
-  const sendMessage = async (msg) => {
-    if (msg !== "") {
-      await addDoc(groupMessagesCollection, {
-        createdAt: serverTimestamp(),
-        sentBy: userID,
-        message: msg,
-      });
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      const groupSnap = await getDoc(groupRef);
-
-      if (!groupSnap.exists()) {
-        await setDoc(groupRef, {
-          creatorID: userID,
-          members: [userID],
-        });
-
-        membersRef.current = [userID];
-      } else {
-        membersRef.current = groupSnap.data().members;
-      }
-
-      onSnapshot(groupMessagesCollection, (snapshot) => {
-        let array = [];
-
-        snapshot.forEach((doc) => {
-          if (doc.data().createdAt !== null) {
-            array.push(doc.data());
-          }
-        });
-
-        setGroupMessages(array);
-      });
-    })();
-  }, []);
-
-  const addMember = async () => {
-    const userQuery = query(
-      collection(db, "users"),
-      where("email", "==", addMemberInputRef.current.value)
-    );
-
-    const docsSnapshot = await getDocs(userQuery);
-    if (docsSnapshot.size > 0) {
-      await updateDoc(groupRef, {
-        members: arrayUnion(docsSnapshot.docs[0].id),
-      });
-    }
-  };
+  const { members, messages } = useGetGroup(userID, groupID);
+  const { sendMessage } = useSendMessage();
+  const { addMember } = useAddMember();
 
   const handleBtnSubmit = async (e) => {
     e.preventDefault();
-    sendMessage(userMessageInputRef.current.value);
+    sendMessage(userID, groupID, userMessageInputRef.current.value);
+    userMessageInputRef.current.value = "";
+  };
+
+  const handleBtnAddMember = () => {
+    addMember(addMemberInputRef.current.value, groupID);
+    addMemberInputRef.current.value = "";
   };
 
   return (
     <>
-      {membersRef.current.includes(userID) ? (
+      {members.includes(userID) ? (
         <div>
           <h1 className="bg-pink-500">{groupID}</h1>
           <form onSubmit={handleBtnSubmit}>
@@ -108,12 +44,12 @@ function Group({ userID }) {
               ref={addMemberInputRef}
               placeholder="Add a Member"
             />
-            <button onClick={addMember}>Add Member</button>
+            <button onClick={handleBtnAddMember}>Add Member</button>
           </form>
 
           <div>
-            {groupMessages.length > 0 &&
-              groupMessages
+            {messages.length > 0 &&
+              messages
                 .sort((a, b) => a.createdAt.toDate() - b.createdAt.toDate())
                 .map((msg) => (
                   <div

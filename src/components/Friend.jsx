@@ -22,7 +22,6 @@ function Friend({ userID }) {
   const usersCollectionRef = collection(db, "users");
 
   const getUserInfo = async () => {
-    console.log(userID);
     const userDoc = doc(db, "users", userID);
     const snapshot = await getDoc(userDoc);
     if (snapshot.exists()) {
@@ -46,7 +45,6 @@ function Friend({ userID }) {
     const qSnapshot = await getDocs(queryFriend);
     qSnapshot.forEach(async (friend) => {
       const friendDocRef = doc(db, "users", friend.id);
-      console.log(friendDocRef);
 
       await updateDoc(friendDocRef, {
         pendingFriends: arrayUnion(userID),

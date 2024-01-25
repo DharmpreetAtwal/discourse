@@ -31,29 +31,3 @@ function App() {
 }
 
 export default App;
-
-{
-  /*<div>
-        <button onClick={handleSignOut} className="bg-red-500">
-          {" "}
-          Sign Out{" "}
-        </button>
-        {group ? (
-          <div>
-            <Chat group={group} />
-          </div>
-        ) : (
-          <div>
-            <h2> Enter Your Group Name</h2>
-            <input ref={groupInputRef} className="bg-orange-500" />
-            <button
-              onClick={() => setGroup(groupInputRef.current.value)}
-              className="bg-red-500"
-            >
-              Enter Discourse
-            </button>
-            <Friend userID={userID} />
-          </div>
-        )}
-      </div>*/
-}

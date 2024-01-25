@@ -45,7 +45,6 @@ function Home({ userID, setIsAuth }) {
       >
         Enter Discourse
       </button>
-      {console.log(userID)}
       <Friend userID={userID} />
     </div>
   );
