@@ -5,10 +5,11 @@ import {
   setDoc,
   collection,
   onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
-export const useGetGroup = (userID, groupID) => {
+export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
   const [members, setMembers] = useState([]);
   const [messages, setMessages] = useState([]);
 
@@ -19,14 +20,25 @@ export const useGetGroup = (userID, groupID) => {
   );
 
   useEffect(() => {
+    let membersArray = [];
+    if (isPrivate && friendID !== null) {
+      membersArray = [userID, friendID];
+    } else {
+      membersArray = [userID];
+    }
+
     const unsubscribe1 = onSnapshot(groupDoc, async (snapshot) => {
       if (!snapshot.exists()) {
         await setDoc(groupDoc, {
           creatorID: userID,
-          members: [userID],
+          members: membersArray,
+          isPrivate: isPrivate,
         });
-        setMembers([userID]);
+        setMembers(membersArray);
       } else {
+        await updateDoc(groupDoc, {
+          isPrivate: isPrivate,
+        });
         setMembers(snapshot.data().members);
       }
     });

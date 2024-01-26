@@ -1,15 +1,20 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useGetGroup } from "../hooks/useGetGroup";
 import { useAddMember } from "../hooks/useAddMember";
 import { useSendMessage } from "../hooks/useSendMessage";
 
-function Group({ userID }) {
+function Group({ userID, isPrivate }) {
   const userMessageInputRef = useRef("");
   const addMemberInputRef = useRef("");
-  const { groupID } = useParams();
+  const { groupID, friendID } = useParams();
 
-  const { members, messages } = useGetGroup(userID, groupID);
+  const { members, messages } = useGetGroup(
+    userID,
+    friendID,
+    groupID,
+    isPrivate
+  );
   const { sendMessage } = useSendMessage();
   const { addMember } = useAddMember();
 
@@ -39,12 +44,16 @@ function Group({ userID }) {
               Submit
             </button>
 
-            <input
-              className="bg-green-500"
-              ref={addMemberInputRef}
-              placeholder="Add a Member"
-            />
-            <button onClick={handleBtnAddMember}>Add Member</button>
+            {!isPrivate && (
+              <div>
+                <input
+                  className="bg-green-500"
+                  ref={addMemberInputRef}
+                  placeholder="Add a Member"
+                />
+                <button onClick={handleBtnAddMember}>Add Member</button>
+              </div>
+            )}
           </form>
 
           <div>

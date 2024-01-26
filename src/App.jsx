@@ -23,7 +23,14 @@ function App() {
             path="home"
             element={<Home userID={userID} setIsAuth={setIsAuth} />}
           ></Route>
-          <Route path="group/:groupID" element={<Group userID={userID} />} />
+          <Route
+            path="group/:groupID"
+            element={<Group userID={userID} isPrivate={false} />}
+          />
+          <Route
+            path="privateGroup/:groupID/:friendID"
+            element={<Group userID={userID} isPrivate={true} />}
+          />
         </Routes>
       </Router>
     </>
