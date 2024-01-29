@@ -15,73 +15,28 @@ import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { db } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
+import { useGetUser } from "../hooks/useGetUser";
+import { useSendFriendRequest } from "../hooks/useSendFriendRequest";
+import { useAddFriend } from "../hooks/useAddFriend";
 
 function Friend({ userID }) {
-  const [friends, setFriends] = useState([]);
-  const [pendingFriends, setPendingFriends] = useState([]);
   const [privateGroups, setPrivateGroups] = useState({});
+  const { friends, pendingFriends } = useGetUser(userID);
 
-  const sendFriendRequestInputRef = useRef(null);
-  const usersCollectionRef = collection(db, "users");
-
+  const { sendFriendRequest } = useSendFriendRequest();
+  const { addFriend } = useAddFriend();
   const navigate = useNavigate();
 
   const groupCollection = collection(db, "groups");
-
-  // useGetUserInfo, takes userID, returns friends, pendingFriends
-  // Hook contains no states
-  const getUserInfo = async () => {
-    const userDoc = doc(db, "users", userID);
-    const snapshot = await getDoc(userDoc);
-    if (snapshot.exists()) {
-      setFriends(snapshot.data().friends);
-      setPendingFriends(snapshot.data().pendingFriends);
-    }
-  };
+  const sendFriendRequestInputRef = useRef(null);
 
   // useGetUserInfo hook called here, state assigned here
   useEffect(() => {
-    getUserInfo();
     getPrivateGroups();
   }, []);
 
-  const sendFriendRequest = async (email) => {
-    const queryFriend = query(
-      usersCollectionRef,
-      where("email", "==", email),
-      limit(1)
-    );
-
-    // Will always iterate only once
-    const qSnapshot = await getDocs(queryFriend);
-    qSnapshot.forEach(async (friend) => {
-      const friendDocRef = doc(db, "users", friend.id);
-
-      await updateDoc(friendDocRef, {
-        pendingFriends: arrayUnion(userID),
-      });
-    });
-  };
-
-  const addFriend = async (friend) => {
-    const userDocRef = doc(db, "users", userID);
-    const friendDocRef = doc(db, "users", friend);
-
-    await updateDoc(userDocRef, {
-      friends: arrayUnion(friend),
-      pendingFriends: arrayRemove(friend),
-    });
-
-    await updateDoc(friendDocRef, {
-      friends: arrayUnion(userID),
-    });
-
-    setFriends([...friends, friend]);
-    setPendingFriends(
-      pendingFriends.filter(function (item) {
-        item != friend;
-      })
-    );
+  const handleAddFriendButton = async (friend) => {
+    await addFriend(userID, friend);
   };
 
   const getPrivateGroups = async () => {
@@ -130,7 +85,7 @@ function Friend({ userID }) {
         <input ref={sendFriendRequestInputRef} className="bg-pink-500" />
         <button
           onClick={() =>
-            sendFriendRequest(sendFriendRequestInputRef.current.value)
+            sendFriendRequest(sendFriendRequestInputRef.current.value, userID)
           }
         >
           Add
@@ -172,7 +127,7 @@ function Friend({ userID }) {
             <div key={friend}>
               <h1 className="bg-blue-500">{friend}</h1>
               <button
-                onClick={() => addFriend(friend)}
+                onClick={() => handleAddFriendButton(friend)}
                 className="bg-orange-500"
               >
                 Add Friend
