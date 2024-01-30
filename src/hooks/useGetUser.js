@@ -2,8 +2,6 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useEffect, useState } from "react";
 
-console.log("RENDER");
-
 export const useGetUser = (userID) => {
   const [friends, setFriends] = useState([]);
   const [pendingFriends, setPendingFriends] = useState([]);

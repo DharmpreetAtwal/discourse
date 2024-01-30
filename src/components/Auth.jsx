@@ -12,8 +12,8 @@ export const Auth = ({ setIsAuth, setUserID }) => {
     try {
       const info = await signInWithPopup(auth, providerGoogleAuth);
 
-      cookies.set("token-auth", info.user.refreshToken);
-      cookies.set("uid", info.user.uid);
+      //cookies.set("token-auth", info.user.refreshToken);
+      //cookies.set("uid", info.user.uid);
 
       setIsAuth(true);
       setUserID(info.user.uid);
