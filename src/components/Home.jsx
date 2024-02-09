@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
-import Friend from "./Friend";
-import { useRef } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "../config/firebase";
-import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
+import { auth, db, rtDB } from "../config/firebase";
+import { signOut } from "firebase/auth";
+import Cookies from "universal-cookie";
+import { useRef } from "react";
+import Friend from "./Friend";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { ref, set } from "firebase/database";
+import { useSetIsOnline } from "../hooks/useSetIsOnline";
 
 const cookies = new Cookies();
 
@@ -13,6 +23,7 @@ function Home({ userID, setIsAuth }) {
   const groupIDInputRef = useRef(null);
 
   const navigate = useNavigate();
+  const { setIsOnline } = useSetIsOnline();
 
   useEffect(() => {
     if (groupID !== null) {
@@ -25,7 +36,10 @@ function Home({ userID, setIsAuth }) {
       .then(() => {
         setIsAuth(false);
         navigate("/");
+
         cookies.remove("uid", { path: "/" });
+
+        setIsOnline(userID, false);
       })
       .catch((err) => {
         console.error(err);
