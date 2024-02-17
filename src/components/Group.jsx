@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetGroup } from "../hooks/useGetGroup";
 import { useAddMember } from "../hooks/useAddMember";
 import { useSendMessage } from "../hooks/useSendMessage";
@@ -19,6 +19,11 @@ function Group({ userID, isPrivate }) {
   );
   const { sendMessage } = useSendMessage();
   const { addMember } = useAddMember();
+  const navigate = useNavigate();
+
+  const handleBtnHome = () => {
+    navigate("/home");
+  };
 
   const handleBtnSubmit = async (e) => {
     e.preventDefault();
@@ -46,6 +51,9 @@ function Group({ userID, isPrivate }) {
     <>
       {members.includes(userID) ? (
         <div>
+          <button className="bg-orange-500" onClick={handleBtnHome}>
+            Home
+          </button>
           <h1 className="bg-pink-500">{groupID}</h1>
           <form onSubmit={handleBtnSubmit}>
             <input

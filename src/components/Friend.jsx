@@ -1,9 +1,9 @@
 import { useSendFriendRequest } from "../hooks/useSendFriendRequest";
-import { useGetPrivateGroups } from "../hooks/useGetPrivateGroups";
 import { useOpenPrivateGroup } from "../hooks/useOpenPrivateGroup";
 import { useAddFriend } from "../hooks/useAddFriend";
 import { useGetUser } from "../hooks/useGetUser";
 import { useRef } from "react";
+import { useGetPrivateGroups } from "../hooks/useGetPrivateGroups";
 
 function Friend({ userID }) {
   const { friends, pendingFriends } = useGetUser(userID);
@@ -20,24 +20,14 @@ function Friend({ userID }) {
 
   return (
     <div>
-      <div>
-        <h2>Add a Friend</h2>
-        <input ref={sendFriendRequestInputRef} className="bg-pink-500" />
-        <button
-          onClick={() =>
-            sendFriendRequest(sendFriendRequestInputRef.current.value, userID)
-          }
-        >
-          Add
-        </button>
-      </div>
-      <div>
-        <h1>Friends: </h1>
+      <div className="mb-2">
+        <h1 className="bg-green-200 text-blue-500 text-3xl text-center">
+          Friends:{" "}
+        </h1>
         {friends.map((friendID) => {
           return (
             <div key={friendID}>
               <h1 className="bg-yellow-500">
-                {friendID}
                 {privateGroups[friendID] == null ? (
                   <button
                     onClick={() =>
@@ -45,7 +35,7 @@ function Friend({ userID }) {
                     }
                     className="bg-blue-500"
                   >
-                    Create Private Group
+                    {friendID}
                   </button>
                 ) : (
                   <button
@@ -54,7 +44,7 @@ function Friend({ userID }) {
                     }
                     className="bg-green-500"
                   >
-                    Open Private Group
+                    {friendID}
                   </button>
                 )}
               </h1>
@@ -62,7 +52,21 @@ function Friend({ userID }) {
           );
         })}
       </div>
-      <div>
+      <div className="mb-2">
+        <h2 className="bg-purple-400 text-2xl text-pink-500 text-center">
+          Add a Friend
+        </h2>
+        <input ref={sendFriendRequestInputRef} className="bg-pink-500 w-5/6" />
+        <button
+          className="bg-green-500 w-1/6"
+          onClick={() =>
+            sendFriendRequest(sendFriendRequestInputRef.current.value, userID)
+          }
+        >
+          Add
+        </button>
+      </div>
+      <div className="mb-2">
         <h1 className="bg-purple-500">Pending Friends</h1>
         {pendingFriends.map((friend) => {
           return (
