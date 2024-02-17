@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { useGetGroup } from "../hooks/useGetGroup";
 import { useAddMember } from "../hooks/useAddMember";
 import { useSendMessage } from "../hooks/useSendMessage";
+import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 function Group({ userID, isPrivate }) {
   const userMessageInputRef = useRef("");
@@ -28,6 +30,17 @@ function Group({ userID, isPrivate }) {
     addMember(addMemberInputRef.current.value, groupID);
     addMemberInputRef.current.value = "";
   };
+
+  useEffect(() => {
+    (async () => {
+      const docRef = doc(db, "groups/" + groupID);
+      const updateMap = new Map();
+      updateMap.set(`lastOpenedByUser.${userID}`, serverTimestamp());
+
+      const updateObject = Object.fromEntries(updateMap);
+      await updateDoc(docRef, updateObject);
+    })();
+  }, []);
 
   return (
     <>

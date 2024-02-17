@@ -1,4 +1,10 @@
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../config/firebase";
 
 export const useSendMessage = () => {
@@ -7,12 +13,17 @@ export const useSendMessage = () => {
       db,
       "groups/" + groupID + "/" + "groupMessages"
     );
+    const groupDoc = doc(db, "groups/" + groupID);
 
     if (message !== "") {
-      await addDoc(groupMessagesCollection, {
+      const docRef = await addDoc(groupMessagesCollection, {
         createdAt: serverTimestamp(),
         sentBy: userID,
         message: message,
+      });
+
+      await updateDoc(groupDoc, {
+        latestMessage: docRef,
       });
     }
   };
