@@ -1,5 +1,5 @@
 import { query } from "firebase/database";
-import { collection, getDocs, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../config/firebase";
 
@@ -20,7 +20,18 @@ export const useGetPublicGroups = (userID) => {
         groupList.push([group.id, group.data()]);
       });
 
-      setPublicGroups(groupList);
+      groupList.forEach(async (group) => {
+        const latestMessageDoc = doc(
+          db,
+          "groups/" + group[0] + "/groupMessages/" + group[1].latestMessage.id
+        );
+
+        const latestMessageSnapshot = await getDoc(latestMessageDoc);
+        group.push(latestMessageSnapshot);
+        setPublicGroups(groupList);
+      });
+
+      //setPublicGroups(groupList);
     })();
   }, []);
 

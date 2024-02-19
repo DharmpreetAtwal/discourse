@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db, rtDB } from "../config/firebase";
+import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import Cookies from "universal-cookie";
 import { useRef } from "react";
@@ -60,7 +60,9 @@ function Home({ userID, setIsAuth }) {
             {publicGroups.map((group) => {
               return (
                 <div className="flex flex-row w-full h-12" key={group[0]}>
-                  <div className="bg-purple-500 w-2/3">{group[0]}</div>
+                  <div className="bg-purple-500 w-2/3">
+                    {group[0]} {group[2].data().message}
+                  </div>
                   <button
                     className="bg-green-500 w-1/3"
                     onClick={() => setGroupID(group[0])}
