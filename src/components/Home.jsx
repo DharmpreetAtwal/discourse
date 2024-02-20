@@ -39,6 +39,17 @@ function Home({ userID, setIsAuth }) {
       });
   };
 
+  const isLatestMessageRead = (group) => {
+    const lastOpened = group.data.lastOpenedByUser[userID];
+    if (lastOpened) {
+      const latestMessageTime = group.latestMessage.data().createdAt.toDate();
+
+      // If the user has opened the group after the latest msg was sent, return true
+      return latestMessageTime.getTime() < lastOpened.toDate().getTime();
+    }
+    return false;
+  };
+
   return (
     <>
       <div className="flex flex-col">
@@ -59,13 +70,26 @@ function Home({ userID, setIsAuth }) {
           <div className="w-2/3">
             {publicGroups.map((group) => {
               return (
-                <div className="flex flex-row w-full h-12" key={group[0]}>
+                <div className="flex flex-row w-full h-12" key={group.id}>
                   <div className="bg-purple-500 w-2/3">
-                    {group[0]} {group[2].data().message}
+                    {group.id}
+                    {isLatestMessageRead(group) ? (
+                      <div>
+                        Last Opened:
+                        {group.data.lastOpenedByUser[userID]
+                          .toDate()
+                          .toString()}
+                      </div>
+                    ) : (
+                      <div>
+                        New Latest Message from:{" "}
+                        {group.latestMessage.data().sentBy}
+                      </div>
+                    )}
                   </div>
                   <button
                     className="bg-green-500 w-1/3"
-                    onClick={() => setGroupID(group[0])}
+                    onClick={() => setGroupID(group.id)}
                   >
                     Join Public Group
                   </button>

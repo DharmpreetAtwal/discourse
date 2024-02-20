@@ -17,21 +17,26 @@ export const useGetPublicGroups = (userID) => {
       let groupList = [];
       const qSnapshot = await getDocs(queryPublicGroup);
       qSnapshot.forEach((group) => {
-        groupList.push([group.id, group.data()]);
+        if (group.id !== "undefined") {
+          groupList.push({ id: group.id, data: group.data() });
+        }
       });
 
       groupList.forEach(async (group) => {
-        const latestMessageDoc = doc(
-          db,
-          "groups/" + group[0] + "/groupMessages/" + group[1].latestMessage.id
-        );
+        if (group.data.latestMessage) {
+          const latestMessageDoc = doc(
+            db,
+            "groups/" +
+              group.id +
+              "/groupMessages/" +
+              group.data.latestMessage.id
+          );
 
-        const latestMessageSnapshot = await getDoc(latestMessageDoc);
-        group.push(latestMessageSnapshot);
-        setPublicGroups(groupList);
+          const latestMessageSnapshot = await getDoc(latestMessageDoc);
+          group.latestMessage = latestMessageSnapshot;
+          setPublicGroups(groupList);
+        }
       });
-
-      //setPublicGroups(groupList);
     })();
   }, []);
 
