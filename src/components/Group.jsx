@@ -49,22 +49,17 @@ function Group({ userID, isPrivate }) {
 
   return (
     <>
-      {members.includes(userID) ? (
-        <div>
-          <button className="bg-orange-500" onClick={handleBtnHome}>
-            Home
-          </button>
-          <h1 className="bg-pink-500">{groupID}</h1>
-          <form onSubmit={handleBtnSubmit}>
-            <input
-              className="bg-red-500"
-              ref={userMessageInputRef}
-              placeholder="Message"
-            />
-            <button className="bg-orange-500" type="submit">
-              Submit
+      <div className="flex flex-col">
+        <div className="flex flex-row h-[10vh] bg-sky-500 justify-between">
+          <div className="my-auto ml-1">
+            <button className="bg-orange-500" onClick={handleBtnHome}>
+              Home
             </button>
-
+          </div>
+          <div className="my-auto">
+            <h1 className="bg-pink-500">{groupID}</h1>
+          </div>
+          <div className="my-auto">
             {!isPrivate && (
               <div>
                 <input
@@ -72,32 +67,58 @@ function Group({ userID, isPrivate }) {
                   ref={addMemberInputRef}
                   placeholder="Add a Member"
                 />
-                <button onClick={handleBtnAddMember}>Add Member</button>
+                <button className="bg-purple-500" onClick={handleBtnAddMember}>
+                  Add Member
+                </button>
               </div>
             )}
-          </form>
-
-          <div>
-            {messages.length > 0 &&
-              messages
-                .sort((a, b) => a.createdAt.toDate() - b.createdAt.toDate())
-                .map((msg) => (
-                  <div
-                    key={msg.createdAt.toDate().toString()}
-                    className="w-full"
-                  >
-                    <p>{msg.message}</p>
-                    <p> {msg.createdAt.toDate().toString()} </p>
-                    <p> {msg.sentBy} </p>
-                  </div>
-                ))}
           </div>
         </div>
-      ) : (
-        <div>
-          <h1> You are not a member of this group </h1>
-        </div>
-      )}
+        {members.includes(userID) ? (
+          <div className="bg-slate-600 relative h-[90vh]">
+            <div className="bg-slate-500">
+              {messages.length > 0 &&
+                messages
+                  .sort((a, b) => a.createdAt.toDate() - b.createdAt.toDate())
+                  .map((msg) => (
+                    <div
+                      key={msg.createdAt.toDate().toString()}
+                      className="flex flex-row justify-between w-full bg-amber-500 mb-1"
+                    >
+                      <div>
+                        <p> {msg.sentBy} </p>
+                      </div>
+
+                      <div>
+                        <p>{msg.message}</p>
+                      </div>
+
+                      <div>
+                        <p> {msg.createdAt.toDate().toString()} </p>
+                      </div>
+                    </div>
+                  ))}
+            </div>
+
+            <div className="fixed bottom-0 p-3 w-full">
+              <form onSubmit={handleBtnSubmit}>
+                <input
+                  className="bg-red-500 w-11/12 p-1 text-4xl"
+                  ref={userMessageInputRef}
+                  placeholder="Message"
+                />
+                <button className="bg-orange-500 text-3xl w-1/12" type="submit">
+                  Submit
+                </button>
+              </form>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <h1> You are not a member of this group </h1>
+          </div>
+        )}
+      </div>
     </>
   );
 }

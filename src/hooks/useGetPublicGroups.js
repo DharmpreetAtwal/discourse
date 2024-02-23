@@ -20,6 +20,7 @@ export const useGetPublicGroups = (userID) => {
         if (group.id !== "undefined") {
           groupList.push({ id: group.id, data: group.data() });
         }
+        console.log(group);
       });
 
       groupList.forEach(async (group) => {
@@ -34,6 +35,7 @@ export const useGetPublicGroups = (userID) => {
 
           const latestMessageSnapshot = await getDoc(latestMessageDoc);
           group.latestMessage = latestMessageSnapshot;
+          console.log(groupList);
           setPublicGroups(groupList);
         }
       });

@@ -68,6 +68,7 @@ function Home({ userID, setIsAuth }) {
             <Friend userID={userID} />
           </div>
           <div className="w-2/3">
+            {console.log(publicGroups)}
             {publicGroups.map((group) => {
               return (
                 <div className="flex flex-row w-full h-12" key={group.id}>
