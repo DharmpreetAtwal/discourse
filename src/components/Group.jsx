@@ -36,20 +36,9 @@ function Group({ userID, isPrivate }) {
     addMemberInputRef.current.value = "";
   };
 
-  useEffect(() => {
-    (async () => {
-      const docRef = doc(db, "groups/" + groupID);
-      const updateMap = new Map();
-      updateMap.set(`lastOpenedByUser.${userID}`, serverTimestamp());
-
-      const updateObject = Object.fromEntries(updateMap);
-      await updateDoc(docRef, updateObject);
-    })();
-  }, []);
-
   return (
     <>
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full">
         <div className="flex flex-row h-[10vh] bg-sky-500 justify-between">
           <div className="my-auto ml-1">
             <button className="bg-orange-500" onClick={handleBtnHome}>
@@ -60,29 +49,21 @@ function Group({ userID, isPrivate }) {
             <h1 className="bg-pink-500">{groupID}</h1>
           </div>
           <div className="my-auto">
-            {!isPrivate && (
-              <div>
-                <input
-                  className="bg-green-500"
-                  ref={addMemberInputRef}
-                  placeholder="Add a Member"
-                />
-                <button className="bg-purple-500" onClick={handleBtnAddMember}>
-                  Add Member
-                </button>
-              </div>
-            )}
+            <button id="sidebarToggle" type="button" className="bg-purple-500">
+              {" "}
+              Open Members{" "}
+            </button>
           </div>
         </div>
         {members.includes(userID) ? (
-          <div className="bg-slate-600 relative h-[90vh]">
-            <div className="bg-slate-500">
+          <div className="flex flex-row bg-slate-600 relative h-[90vh] w-full">
+            <div className="bg-slate-500 pb-16 w-4/5">
               {messages.length > 0 &&
                 messages
                   .sort((a, b) => a.createdAt.toDate() - b.createdAt.toDate())
                   .map((msg) => (
                     <div
-                      key={msg.createdAt.toDate().toString()}
+                      key={msg.createdAt}
                       className="flex flex-row justify-between w-full bg-amber-500 mb-1"
                     >
                       <div>
@@ -100,7 +81,30 @@ function Group({ userID, isPrivate }) {
                   ))}
             </div>
 
-            <div className="fixed bottom-0 p-3 w-full">
+            <div
+              id="sidebar"
+              className="bg-yellow-200 w-1/5 transition-all duration-500"
+            >
+              <div className="my-auto">
+                {!isPrivate && (
+                  <div>
+                    <input
+                      className="bg-green-500"
+                      ref={addMemberInputRef}
+                      placeholder="Add a Member"
+                    />
+                    <button
+                      className="bg-purple-500"
+                      onClick={handleBtnAddMember}
+                    >
+                      Add Member
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="fixed bottom-0 p-2 w-full">
               <form onSubmit={handleBtnSubmit}>
                 <input
                   className="bg-red-500 w-11/12 p-1 text-4xl"

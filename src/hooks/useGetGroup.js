@@ -6,6 +6,7 @@ import {
   collection,
   onSnapshot,
   updateDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
@@ -27,21 +28,28 @@ export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
       membersArray = [userID];
     }
 
-    const unsubscribe1 = onSnapshot(groupDoc, async (snapshot) => {
+    (async () => {
+      const snapshot = await getDoc(groupDoc);
       if (!snapshot.exists()) {
         await setDoc(groupDoc, {
           creatorID: userID,
           members: membersArray,
           isPrivate: isPrivate,
+          lastOpenedByUser: { userID: serverTimestamp() },
         });
         setMembers(membersArray);
       } else {
         await updateDoc(groupDoc, {
           isPrivate: isPrivate,
+          lastOpenedByUser: { userID: serverTimestamp() },
         });
         setMembers(snapshot.data().members);
       }
-    });
+    })();
+
+    //const unsubscribe1 = onSnapshot(groupDoc, async (snapshot) => {
+
+    //});
 
     const unsubscribe2 = onSnapshot(groupMessagesCollection, (snapshot) => {
       let array = [];
@@ -55,7 +63,7 @@ export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
     });
 
     return () => {
-      unsubscribe1();
+      //unsubscribe1();
       unsubscribe2();
     };
   }, []);

@@ -68,7 +68,6 @@ function Home({ userID, setIsAuth }) {
             <Friend userID={userID} />
           </div>
           <div className="w-2/3">
-            {console.log(publicGroups)}
             {publicGroups.map((group) => {
               return (
                 <div className="flex flex-row w-full h-12" key={group.id}>
@@ -84,7 +83,9 @@ function Home({ userID, setIsAuth }) {
                     ) : (
                       <div>
                         New Latest Message from:{" "}
-                        {group.latestMessage.data().sentBy}
+                        {group.latestMessage
+                          ? group.latestMessage.data().sentBy
+                          : "NONE"}
                       </div>
                     )}
                   </div>
