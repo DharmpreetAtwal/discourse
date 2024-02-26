@@ -40,12 +40,25 @@ function Home({ userID, setIsAuth }) {
   };
 
   const isLatestMessageRead = (group) => {
+    //console.log(group);
     const lastOpened = group.data.lastOpenedByUser[userID];
     if (lastOpened) {
-      const latestMessageTime = group.latestMessage.data().createdAt.toDate();
+      //try {
+      if (!group.latestMessage) {
+        //console.log(group.id);
+        //console.log(group.data);
+      } else {
+        //console.log(group.data);
+        const latestMessageTime = group.latestMessage.data().createdAt.toDate();
+        return latestMessageTime.getTime() < lastOpened.toDate().getTime();
+      }
+
+      //} catch (error) {
+      //  console.error(group.id + " doesn't have latestMessage");
+      //  console.log(group.data);
+      //}
 
       // If the user has opened the group after the latest msg was sent, return true
-      return latestMessageTime.getTime() < lastOpened.toDate().getTime();
     }
     return false;
   };
@@ -68,6 +81,7 @@ function Home({ userID, setIsAuth }) {
             <Friend userID={userID} />
           </div>
           <div className="w-2/3">
+            {console.log(publicGroups)}
             {publicGroups.map((group) => {
               return (
                 <div className="flex flex-row w-full h-12" key={group.id}>

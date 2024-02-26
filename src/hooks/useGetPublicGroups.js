@@ -8,6 +8,7 @@ export const useGetPublicGroups = (userID) => {
 
   useEffect(() => {
     (async () => {
+      setPublicGroups([]);
       const queryPublicGroup = query(
         collection(db, "groups"),
         where("isPrivate", "==", false),
@@ -15,29 +16,61 @@ export const useGetPublicGroups = (userID) => {
       );
 
       let groupList = [];
-      const qSnapshot = await getDocs(queryPublicGroup);
-      qSnapshot.forEach((group) => {
-        if (group.id !== "undefined") {
-          groupList.push({ id: group.id, data: group.data() });
-        }
-        console.log(group);
-      });
+      const qPromise = getDocs(queryPublicGroup);
+      qPromise.then((qSnapshot) => {
+        qSnapshot.forEach(async (group) => {
+          const groupMap = {};
+          //console.log(group.id);
+          if (group.data().latestMessage && group.id !== "undefined") {
+            const latestMessageDoc = doc(
+              db,
+              "groups/" +
+                group.id +
+                "/groupMessages/" +
+                group.data().latestMessage.id
+            );
 
-      groupList.forEach(async (group) => {
-        if (group.data.latestMessage) {
-          const latestMessageDoc = doc(
-            db,
-            "groups/" +
-              group.id +
-              "/groupMessages/" +
-              group.data.latestMessage.id
-          );
+            const latestMessagePromise = getDoc(latestMessageDoc);
+            latestMessagePromise.then((snapshot) => {
+              groupMap.latestMessage = snapshot;
+              groupMap.id = group.id;
+              groupMap.data = group.data();
+              groupList.push(groupMap);
+              setPublicGroups((prev) => {
+                return [...prev, groupMap];
+              });
+            });
+          }
+        });
 
-          const latestMessageSnapshot = await getDoc(latestMessageDoc);
-          group.latestMessage = latestMessageSnapshot;
-          console.log(groupList);
-          setPublicGroups(groupList);
-        }
+        //if (groupList.length > 0) {
+        //  setPublicGroups(groupList);
+        //}
+
+        /*qSnapshot.forEach((group) => {
+          if (group.id !== "undefined") {
+            groupList.push({ id: group.id, data: group.data() });
+          }
+        });
+
+        groupList.forEach(async (group) => {
+          if (group.data.latestMessage) {
+            const latestMessageDoc = doc(
+              db,
+              "groups/" +
+                group.id +
+                "/groupMessages/" +
+                group.data.latestMessage.id
+            );
+
+            const latestMessagePromise = getDoc(latestMessageDoc);
+            latestMessagePromise.then((snapshot) => {
+              group.latestMessage = snapshot;
+              console.log(group.latestMessage);
+              setPublicGroups(groupList);
+            });
+          }
+        });*/
       });
     })();
   }, []);
