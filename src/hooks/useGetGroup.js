@@ -21,6 +21,8 @@ export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
   );
 
   useEffect(() => {
+    console.log("useGetGroup");
+
     let membersArray = [];
     if (isPrivate && friendID !== null) {
       membersArray = [userID, friendID];

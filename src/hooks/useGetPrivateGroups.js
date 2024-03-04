@@ -7,6 +7,7 @@ export const useGetPrivateGroups = (userID) => {
 
   useEffect(() => {
     (async () => {
+      console.log("useGetPrivateGroup");
       const queryPrivateGroup = query(
         collection(db, "groups"),
         where("isPrivate", "==", true),

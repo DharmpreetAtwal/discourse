@@ -7,6 +7,8 @@ export const useGetUser = (userID) => {
   const [pendingFriends, setPendingFriends] = useState([]);
 
   useEffect(() => {
+    console.log("useGetUser");
+
     const userDoc = doc(db, "users", userID);
     const unsubscribe1 = onSnapshot(userDoc, async (snapshot) => {
       if (snapshot.exists()) {

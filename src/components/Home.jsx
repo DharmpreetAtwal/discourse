@@ -45,10 +45,7 @@ function Home({ userID, setIsAuth }) {
     if (lastOpened) {
       //try {
       if (!group.latestMessage) {
-        //console.log(group.id);
-        //console.log(group.data);
       } else {
-        //console.log(group.data);
         const latestMessageTime = group.latestMessage.data().createdAt.toDate();
         return latestMessageTime.getTime() < lastOpened.toDate().getTime();
       }
@@ -65,6 +62,7 @@ function Home({ userID, setIsAuth }) {
 
   return (
     <>
+      {console.log(publicGroups)}
       <div className="flex flex-col">
         <div className="flex flex-row bg-orange-500 h-[10vh] min-w-full p-4 justify-between">
           <div></div>
@@ -81,7 +79,6 @@ function Home({ userID, setIsAuth }) {
             <Friend userID={userID} />
           </div>
           <div className="w-2/3">
-            {console.log(publicGroups)}
             {publicGroups.map((group) => {
               return (
                 <div className="flex flex-row w-full h-12" key={group.id}>
