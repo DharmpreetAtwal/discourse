@@ -32,10 +32,13 @@ export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
 
     (async () => {
       const snapshot = await getDoc(groupDoc);
-      const lastOpenedByUserMap = snapshot.data().lastOpenedByUser;
-      lastOpenedByUserMap[userID] = serverTimestamp();
+      //const lastOpenedByUserMap = snapshot.data().lastOpenedByUser;
+      //lastOpenedByUserMap[userID] = serverTimestamp();
 
       if (!snapshot.exists()) {
+        const lastOpenedByUserMap = {};
+        lastOpenedByUserMap[userID] = serverTimestamp();
+
         await setDoc(groupDoc, {
           creatorID: userID,
           members: membersArray,
@@ -44,6 +47,9 @@ export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
         });
         setMembers(membersArray);
       } else {
+        const lastOpenedByUserMap = snapshot.data().lastOpenedByUser;
+        lastOpenedByUserMap[userID] = serverTimestamp();
+
         await updateDoc(groupDoc, {
           isPrivate: isPrivate,
           lastOpenedByUser: lastOpenedByUserMap,
