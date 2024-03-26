@@ -4,9 +4,15 @@ import { useAddFriend } from "../hooks/useAddFriend";
 import { useGetUser } from "../hooks/useGetUser";
 import { useRef } from "react";
 import { useGetPrivateGroups } from "../hooks/useGetPrivateGroups";
+import { useGetOnlineFriends } from "../hooks/useGetOnlineFriends";
 
 function Friend({ userID }) {
+  {
+    //console.log("Render FRIENDS");
+  }
+
   const { friends, pendingFriends } = useGetUser(userID);
+  //const { onlineFriends } = useGetOnlineFriends(userID);
   const { privateGroups } = useGetPrivateGroups(userID);
   const { sendFriendRequest } = useSendFriendRequest();
   const { openPrivateGroup } = useOpenPrivateGroup();

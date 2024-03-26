@@ -11,18 +11,29 @@ import { useGetPublicGroups } from "../hooks/useGetPublicGroups";
 const cookies = new Cookies();
 
 function Home({ userID, setIsAuth }) {
-  const { publicGroups } = useGetPublicGroups(userID);
-  const [groupID, setGroupID] = useState(null);
+  //const { publicGroups } = useGetPublicGroups(userID);
+  //const publicGroups = [];
+  const [publicGroups, setPublicGroups] = useState([]);
   const groupIDInputRef = useRef(null);
 
   const navigate = useNavigate();
-  const { setIsOnline } = useSetIsOnline();
+  //const { setIsOnline } = useSetIsOnline();
+  const { getPublicGroups } = useGetPublicGroups();
 
-  useEffect(() => {
+  const navigateGroup = (groupID) => {
     if (groupID !== null) {
       navigate("/group/" + groupID);
     }
-  }, [groupID]);
+  };
+
+  useEffect(() => {
+    const handleFetch = async () => {
+      const output = await getPublicGroups(userID);
+      setPublicGroups(output);
+    };
+
+    handleFetch();
+  }, []);
 
   const handleSignOut = () => {
     signOut(auth)
@@ -32,7 +43,7 @@ function Home({ userID, setIsAuth }) {
 
         cookies.remove("uid", { path: "/" });
 
-        setIsOnline(userID, false);
+        //setIsOnline(userID, false);
       })
       .catch((err) => {
         console.error(err);
@@ -40,12 +51,10 @@ function Home({ userID, setIsAuth }) {
   };
 
   const isLatestMessageRead = (group) => {
-    //console.log(group);
     const lastOpened = group.data.lastOpenedByUser[userID];
     if (lastOpened) {
       //try {
-      if (!group.latestMessage) {
-      } else {
+      if (group.latestMessage) {
         const latestMessageTime = group.latestMessage.data().createdAt.toDate();
         return latestMessageTime.getTime() < lastOpened.toDate().getTime();
       }
@@ -62,7 +71,6 @@ function Home({ userID, setIsAuth }) {
 
   return (
     <>
-      {console.log(publicGroups)}
       <div className="flex flex-col">
         <div className="flex flex-row bg-orange-500 h-[10vh] min-w-full p-4 justify-between">
           <div></div>
@@ -74,9 +82,10 @@ function Home({ userID, setIsAuth }) {
             </button>
           </div>
         </div>
+
         <div className="flex flex-row bg-slate-200 h-[90vh] min-w-screen">
           <div className="flex flex-col w-1/3 bg-slate-600">
-            <Friend userID={userID} />
+            {<Friend userID={userID} />}
           </div>
           <div className="w-2/3">
             {publicGroups.map((group) => {
@@ -102,7 +111,7 @@ function Home({ userID, setIsAuth }) {
                   </div>
                   <button
                     className="bg-green-500 w-1/3"
-                    onClick={() => setGroupID(group.id)}
+                    onClick={() => navigateGroup(group.id)}
                   >
                     Join Public Group
                   </button>
@@ -116,7 +125,7 @@ function Home({ userID, setIsAuth }) {
         <h2> Enter Your GroupID Name</h2>
         <input ref={groupIDInputRef} className="bg-orange-500" />
         <button
-          onClick={() => setGroupID(groupIDInputRef.current.value)}
+          onClick={() => navigateGroup(groupIDInputRef.current.value)}
           className="bg-red-500"
         >
           Enter Discourse
