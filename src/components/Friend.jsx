@@ -7,12 +7,8 @@ import { useGetPrivateGroups } from "../hooks/useGetPrivateGroups";
 import { useGetOnlineFriends } from "../hooks/useGetOnlineFriends";
 
 function Friend({ userID }) {
-  {
-    //console.log("Render FRIENDS");
-  }
-
   const { friends, pendingFriends } = useGetUser(userID);
-  //const { onlineFriends } = useGetOnlineFriends(userID);
+  const { onlineFriends } = useGetOnlineFriends(friends);
   const { privateGroups } = useGetPrivateGroups(userID);
   const { sendFriendRequest } = useSendFriendRequest();
   const { openPrivateGroup } = useOpenPrivateGroup();
@@ -28,9 +24,9 @@ function Friend({ userID }) {
     <div>
       <div className="mb-2">
         <h1 className="bg-green-200 text-blue-500 text-3xl text-center">
-          Friends:{" "}
+          Friends:
         </h1>
-        {friends.map((friendID) => {
+        {friends.map((friendID, index) => {
           return (
             <div key={friendID}>
               <h1 className="bg-yellow-500">
@@ -48,7 +44,9 @@ function Friend({ userID }) {
                     onClick={() =>
                       openPrivateGroup(userID, friendID, privateGroups)
                     }
-                    className="bg-green-500"
+                    className={
+                      onlineFriends[index] ? "bg-green-500" : "bg-slate-500"
+                    }
                   >
                     {friendID}
                   </button>

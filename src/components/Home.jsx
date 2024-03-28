@@ -11,13 +11,11 @@ import { useGetPublicGroups } from "../hooks/useGetPublicGroups";
 const cookies = new Cookies();
 
 function Home({ userID, setIsAuth }) {
-  //const { publicGroups } = useGetPublicGroups(userID);
-  //const publicGroups = [];
   const [publicGroups, setPublicGroups] = useState([]);
   const groupIDInputRef = useRef(null);
 
   const navigate = useNavigate();
-  //const { setIsOnline } = useSetIsOnline();
+  const { setIsOnline } = useSetIsOnline();
   const { getPublicGroups } = useGetPublicGroups();
 
   const navigateGroup = (groupID) => {
@@ -43,7 +41,7 @@ function Home({ userID, setIsAuth }) {
 
         cookies.remove("uid", { path: "/" });
 
-        //setIsOnline(userID, false);
+        setIsOnline(userID, false);
       })
       .catch((err) => {
         console.error(err);
@@ -85,7 +83,7 @@ function Home({ userID, setIsAuth }) {
 
         <div className="flex flex-row bg-slate-200 h-[90vh] min-w-screen">
           <div className="flex flex-col w-1/3 bg-slate-600">
-            {<Friend userID={userID} />}
+            {publicGroups.length > 0 && <Friend userID={userID} />}
           </div>
           <div className="w-2/3">
             {publicGroups.map((group) => {

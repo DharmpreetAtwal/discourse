@@ -3,25 +3,24 @@ import { rtDB } from "../config/firebase";
 import { useEffect, useState } from "react";
 import { useGetUser } from "./useGetUser";
 
-export const useGetOnlineFriends = (userID) => {
+export const useGetOnlineFriends = (friends) => {
   const [onlineFriends, setOnlineFriends] = useState([]);
-  const { friends } = useGetUser(userID);
 
   useEffect(() => {
-    console.log("Getting online Friends");
-    var onlineFriendsList = [];
+    if (friends.length > 0) {
+      //let onlineFriendsList = [];
 
-    //console.log(friends);
-    friends.forEach((friendID) => {
-      const isOnlineRef = ref(rtDB, friendID + "/isOnline");
-      onValue(isOnlineRef, (snapshot) => {
-        const data = snapshot.val();
-        onlineFriendsList.push(data);
+      friends.forEach((friendID) => {
+        const isOnlineRef = ref(rtDB, friendID + "/isOnline");
+        onValue(isOnlineRef, (snapshot) => {
+          const data = snapshot.val();
+          setOnlineFriends([...onlineFriends, data]);
+
+          //onlineFriendsList.push(data);
+        });
       });
-    });
-
-    setOnlineFriends(onlineFriends);
-  });
+    }
+  }, [friends]);
 
   return { onlineFriends };
 };

@@ -1,11 +1,9 @@
 import { query } from "firebase/database";
 import { collection, doc, getDoc, getDocs, where } from "firebase/firestore";
-import { useEffect, useRef, useState } from "react";
 import { db } from "../config/firebase";
 
 export const useGetPublicGroups = () => {
   const getPublicGroups = async (userID) => {
-    console.log("useGetPublicGroup");
     const queryPublicGroup = query(
       collection(db, "groups"),
       where("isPrivate", "==", false),
