@@ -1,10 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetGroup } from "../hooks/useGetGroup";
 import { useAddMember } from "../hooks/useAddMember";
 import { useSendMessage } from "../hooks/useSendMessage";
-import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { db } from "../config/firebase";
 
 function Group({ userID, isPrivate }) {
   const userMessageInputRef = useRef("");
@@ -17,6 +15,8 @@ function Group({ userID, isPrivate }) {
     groupID,
     isPrivate
   );
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
   const { sendMessage } = useSendMessage();
   const { addMember } = useAddMember();
   const navigate = useNavigate();
@@ -36,6 +36,10 @@ function Group({ userID, isPrivate }) {
     addMemberInputRef.current.value = "";
   };
 
+  const handleBtnOpenSidebar = () => {
+    setIsSidebarVisible((prev) => !prev);
+  };
+
   return (
     <>
       <div className="flex flex-col w-full">
@@ -49,15 +53,24 @@ function Group({ userID, isPrivate }) {
             <h1 className="bg-pink-500">{groupID}</h1>
           </div>
           <div className="my-auto">
-            <button id="sidebarToggle" type="button" className="bg-purple-500">
-              {" "}
-              Open Members{" "}
+            <button
+              onClick={handleBtnOpenSidebar}
+              id="sidebarToggle"
+              type="button"
+              className="bg-purple-500"
+            >
+              Open Sidebar
             </button>
           </div>
         </div>
         {members.includes(userID) ? (
           <div className="flex flex-row bg-slate-600 relative h-[90vh] w-full">
-            <div className="bg-slate-500 pb-16 w-4/5">
+            <div
+              className={
+                "bg-slate-500 pb-16 overflow-auto no-scrollbar " +
+                (isSidebarVisible ? "w-4/5" : "w-full")
+              }
+            >
               {messages.length > 0 &&
                 messages
                   .sort((a, b) => a.createdAt.toDate() - b.createdAt.toDate())
@@ -81,28 +94,41 @@ function Group({ userID, isPrivate }) {
                   ))}
             </div>
 
-            <div
-              id="sidebar"
-              className="bg-yellow-200 w-1/5 transition-all duration-500"
-            >
-              <div className="my-auto">
-                {!isPrivate && (
-                  <div>
-                    <input
-                      className="bg-green-500"
-                      ref={addMemberInputRef}
-                      placeholder="Add a Member"
-                    />
-                    <button
-                      className="bg-purple-500"
-                      onClick={handleBtnAddMember}
-                    >
-                      Add Member
-                    </button>
-                  </div>
-                )}
+            {isSidebarVisible && (
+              <div
+                id="sidebar"
+                className="bg-yellow-200 w-1/5 transition-all duration-500"
+              >
+                <div>
+                  <p> Current Members: </p>
+                  {members.map((member) => {
+                    return (
+                      <p key={member} className="bg-emerald-500">
+                        {member}
+                      </p>
+                    );
+                  })}
+                </div>
+
+                <div className="my-auto">
+                  {!isPrivate && (
+                    <div>
+                      <input
+                        className="bg-green-500 text-gray-900"
+                        ref={addMemberInputRef}
+                        placeholder="Add a Member"
+                      />
+                      <button
+                        className="bg-purple-500"
+                        onClick={handleBtnAddMember}
+                      >
+                        Add Member
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="fixed bottom-0 p-2 w-full">
               <form onSubmit={handleBtnSubmit}>

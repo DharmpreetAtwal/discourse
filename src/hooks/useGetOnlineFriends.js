@@ -8,15 +8,11 @@ export const useGetOnlineFriends = (friends) => {
 
   useEffect(() => {
     if (friends.length > 0) {
-      //let onlineFriendsList = [];
-
       friends.forEach((friendID) => {
         const isOnlineRef = ref(rtDB, friendID + "/isOnline");
         onValue(isOnlineRef, (snapshot) => {
           const data = snapshot.val();
           setOnlineFriends([...onlineFriends, data]);
-
-          //onlineFriendsList.push(data);
         });
       });
     }
