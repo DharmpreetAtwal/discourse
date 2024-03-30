@@ -15,7 +15,28 @@ export const useGetPublicGroups = () => {
     const qSnapshot = await getDocs(queryPublicGroup);
 
     qSnapshot.forEach((group) => {
-      if (group.data().latestMessage && group.id !== "undefined") {
+      console.log(group.id);
+
+      if (group.id) {
+        const groupMap = {};
+        groupMap.id = group.id;
+        groupMap.data = group.data();
+        groupList.push(groupMap);
+      }
+
+      if (group.data().latestMessage) {
+        const latestMessageDoc = doc(
+          db,
+          "groups/" +
+            group.id +
+            "/groupMessages/" +
+            group.data().latestMessage.id
+        );
+
+        promiseList.push(getDoc(latestMessageDoc));
+      }
+
+      /*if (group.data().latestMessage && group.id !== "undefined") {
         const latestMessageDoc = doc(
           db,
           "groups/" +
@@ -30,7 +51,7 @@ export const useGetPublicGroups = () => {
         groupList.push(groupMap);
 
         promiseList.push(getDoc(latestMessageDoc));
-      }
+      }*/
     });
 
     const promises = await Promise.all(promiseList);
@@ -38,6 +59,7 @@ export const useGetPublicGroups = () => {
       groupList[index].latestMessage = latestMessage;
     });
 
+    console.log(groupList);
     return groupList;
   };
 

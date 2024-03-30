@@ -15,6 +15,7 @@ function Group({ userID, isPrivate }) {
     groupID,
     isPrivate
   );
+
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const { sendMessage } = useSendMessage();

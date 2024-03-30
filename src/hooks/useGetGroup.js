@@ -7,6 +7,7 @@ import {
   onSnapshot,
   updateDoc,
   serverTimestamp,
+  addDoc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 
@@ -21,18 +22,15 @@ export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
   );
 
   useEffect(() => {
-    let membersArray = [];
-    if (isPrivate && friendID !== null) {
-      membersArray = [userID, friendID];
-    } else {
-      membersArray = [userID];
-    }
+    // let membersArray = [];
+    // if (isPrivate && friendID !== null) {
+    //   membersArray = [userID, friendID];
+    // } else {
+    //   membersArray = [userID];
+    // }
 
     (async () => {
-      const snapshot = await getDoc(groupDoc);
-      //const lastOpenedByUserMap = snapshot.data().lastOpenedByUser;
-      //lastOpenedByUserMap[userID] = serverTimestamp();
-
+      /*
       if (!snapshot.exists()) {
         const lastOpenedByUserMap = {};
         lastOpenedByUserMap[userID] = serverTimestamp();
@@ -43,22 +41,23 @@ export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
           isPrivate: isPrivate,
           lastOpenedByUser: lastOpenedByUserMap,
         });
-        setMembers(membersArray);
-      } else {
-        const lastOpenedByUserMap = snapshot.data().lastOpenedByUser;
+      } else {*/
+      const snapshot = await getDoc(groupDoc);
+      const lastOpenedByUserMap = snapshot.data().lastOpenedByUser;
+      if (lastOpenedByUserMap) {
         lastOpenedByUserMap[userID] = serverTimestamp();
-
-        await updateDoc(groupDoc, {
-          isPrivate: isPrivate,
-          lastOpenedByUser: lastOpenedByUserMap,
-        });
-        setMembers(snapshot.data().members);
       }
+
+      await updateDoc(groupDoc, {
+        //isPrivate: isPrivate,
+        lastOpenedByUser: lastOpenedByUserMap,
+      });
+      //}
     })();
 
-    //const unsubscribe1 = onSnapshot(groupDoc, async (snapshot) => {
-
-    //});
+    const unsubscribe1 = onSnapshot(groupDoc, (snapshot) => {
+      setMembers(snapshot.data().members);
+    });
 
     const unsubscribe2 = onSnapshot(groupMessagesCollection, (snapshot) => {
       let array = [];
@@ -72,7 +71,7 @@ export const useGetGroup = (userID, friendID, groupID, isPrivate) => {
     });
 
     return () => {
-      //unsubscribe1();
+      unsubscribe1();
       unsubscribe2();
     };
   }, []);

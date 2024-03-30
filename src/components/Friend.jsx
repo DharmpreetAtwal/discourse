@@ -5,6 +5,8 @@ import { useGetUser } from "../hooks/useGetUser";
 import { useRef } from "react";
 import { useGetPrivateGroups } from "../hooks/useGetPrivateGroups";
 import { useGetOnlineFriends } from "../hooks/useGetOnlineFriends";
+import { useCreateGroup } from "../hooks/useCreateGroup";
+import { useNavigate } from "react-router-dom";
 
 function Friend({ userID }) {
   const { friends, pendingFriends } = useGetUser(userID);
@@ -13,11 +15,28 @@ function Friend({ userID }) {
   const { sendFriendRequest } = useSendFriendRequest();
   const { openPrivateGroup } = useOpenPrivateGroup();
   const { addFriend } = useAddFriend();
+  const { createGroup } = useCreateGroup();
+  const navigate = useNavigate();
 
   const sendFriendRequestInputRef = useRef(null);
 
   const handleAddFriendButton = async (friend) => {
     await addFriend(userID, friend);
+  };
+
+  const handleOpenPrivateGroupBtn = (friendID) => {
+    if (privateGroups[friendID] == null) {
+      createGroup(userID, [friendID], true).then((doc) => {
+        navigate("../privateGroup/" + doc.id + "/" + friendID, {
+          replace: true,
+        });
+        //openPrivateGroup(userID, friendID, privateGroups);
+      });
+    } else {
+      navigate("../privateGroup/" + privateGroups[friendID] + "/" + friendID, {
+        replace: true,
+      });
+    }
   };
 
   return (
@@ -32,18 +51,14 @@ function Friend({ userID }) {
               <h1 className="bg-yellow-500">
                 {privateGroups[friendID] == null ? (
                   <button
-                    onClick={() =>
-                      openPrivateGroup(userID, friendID, privateGroups)
-                    }
+                    onClick={() => handleOpenPrivateGroupBtn(friendID)}
                     className="bg-blue-500"
                   >
                     {friendID}
                   </button>
                 ) : (
                   <button
-                    onClick={() =>
-                      openPrivateGroup(userID, friendID, privateGroups)
-                    }
+                    onClick={() => handleOpenPrivateGroupBtn(friendID)}
                     className={
                       onlineFriends[index] ? "bg-green-500" : "bg-slate-500"
                     }

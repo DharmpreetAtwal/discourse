@@ -7,6 +7,7 @@ import { useRef } from "react";
 import Friend from "./Friend";
 import { useSetIsOnline } from "../hooks/useSetIsOnline";
 import { useGetPublicGroups } from "../hooks/useGetPublicGroups";
+import { useCreateGroup } from "../hooks/useCreateGroup";
 
 const cookies = new Cookies();
 
@@ -17,6 +18,7 @@ function Home({ userID, setIsAuth }) {
   const navigate = useNavigate();
   const { setIsOnline } = useSetIsOnline();
   const { getPublicGroups } = useGetPublicGroups();
+  const { createGroup } = useCreateGroup();
 
   const navigateGroup = (groupID) => {
     if (groupID !== null) {
@@ -27,6 +29,7 @@ function Home({ userID, setIsAuth }) {
   useEffect(() => {
     const handleFetch = async () => {
       const output = await getPublicGroups(userID);
+      console.log(output);
       setPublicGroups(output);
     };
 
@@ -46,6 +49,12 @@ function Home({ userID, setIsAuth }) {
       .catch((err) => {
         console.error(err);
       });
+  };
+
+  const handleCreateGroupBtn = () => {
+    createGroup(userID, [], false).then((doc) => {
+      navigateGroup(doc.id);
+    });
   };
 
   const isLatestMessageRead = (group) => {
@@ -85,10 +94,10 @@ function Home({ userID, setIsAuth }) {
           <div className="flex flex-col w-1/3 bg-slate-600">
             {publicGroups.length > 0 && <Friend userID={userID} />}
           </div>
-          <div className="w-2/3">
+          <div className="w-2/3 overflow-auto no-scrollbar">
             {publicGroups.map((group) => {
               return (
-                <div className="flex flex-row w-full h-12" key={group.id}>
+                <div className="flex flex-row w-full h-16" key={group.id}>
                   <div className="bg-purple-500 w-2/3">
                     {group.id}
                     {isLatestMessageRead(group) ? (
@@ -116,6 +125,14 @@ function Home({ userID, setIsAuth }) {
                 </div>
               );
             })}
+            <div className="w-9 h-9">
+              <button
+                onClick={handleCreateGroupBtn}
+                className="bg-orange-500 w-full h-full"
+              >
+                +
+              </button>
+            </div>
           </div>
         </div>
       </div>
