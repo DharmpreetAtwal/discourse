@@ -1,28 +1,28 @@
 import React, { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetGroup } from "../hooks/useGetGroup";
-import { useAddMember } from "../hooks/useAddMember";
-import { useSendMessage } from "../hooks/useSendMessage";
+import { useGetGroup } from "../hooks/group/useGetGroup";
+import { useAddMember } from "../hooks/group/useAddMember";
+import { useSendMessage } from "../hooks/group/useSendMessage";
+import { useSetOpenGroup } from "../hooks/useSetOpenGroup";
+import useSetGroupLastOpenByUser from "../hooks/useSetGroupLastOpenByUser";
 
 function Group({ userID, isPrivate }) {
   const userMessageInputRef = useRef("");
   const addMemberInputRef = useRef("");
-  const { groupID, friendID } = useParams();
+  const { groupID } = useParams();
 
-  const { members, messages } = useGetGroup(
-    userID,
-    friendID,
-    groupID,
-    isPrivate
-  );
-
+  const { members, messages } = useGetGroup(userID, groupID);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const { sendMessage } = useSendMessage();
   const { addMember } = useAddMember();
   const navigate = useNavigate();
+  const { setOpenGroup } = useSetOpenGroup();
+  const { setGroupLastOpenByUser } = useSetGroupLastOpenByUser();
 
   const handleBtnHome = () => {
+    setOpenGroup(userID, "");
+    setGroupLastOpenByUser(userID, groupID);
     navigate("/home");
   };
 

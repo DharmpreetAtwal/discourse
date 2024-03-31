@@ -6,8 +6,9 @@ import Cookies from "universal-cookie";
 import { useRef } from "react";
 import Friend from "./Friend";
 import { useSetIsOnline } from "../hooks/useSetIsOnline";
-import { useGetPublicGroups } from "../hooks/useGetPublicGroups";
+import { useGetPublicGroups } from "../hooks/home/useGetPublicGroups";
 import { useCreateGroup } from "../hooks/useCreateGroup";
+import { useSetOpenGroup } from "../hooks/useSetOpenGroup";
 
 const cookies = new Cookies();
 
@@ -19,9 +20,11 @@ function Home({ userID, setIsAuth }) {
   const { setIsOnline } = useSetIsOnline();
   const { getPublicGroups } = useGetPublicGroups();
   const { createGroup } = useCreateGroup();
+  const { setOpenGroup } = useSetOpenGroup();
 
   const navigateGroup = (groupID) => {
     if (groupID !== null) {
+      setOpenGroup(userID, groupID);
       navigate("/group/" + groupID);
     }
   };
@@ -29,7 +32,6 @@ function Home({ userID, setIsAuth }) {
   useEffect(() => {
     const handleFetch = async () => {
       const output = await getPublicGroups(userID);
-      console.log(output);
       setPublicGroups(output);
     };
 

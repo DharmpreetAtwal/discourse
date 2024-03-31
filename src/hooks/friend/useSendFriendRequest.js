@@ -8,7 +8,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "../../config/firebase";
 
 export const useSendFriendRequest = () => {
   const usersCollectionRef = collection(db, "users");

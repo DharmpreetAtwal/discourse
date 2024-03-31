@@ -1,12 +1,12 @@
-import { useSendFriendRequest } from "../hooks/useSendFriendRequest";
+import { useSendFriendRequest } from "../hooks/friend/useSendFriendRequest";
 import { useOpenPrivateGroup } from "../hooks/useOpenPrivateGroup";
-import { useAddFriend } from "../hooks/useAddFriend";
-import { useGetUser } from "../hooks/useGetUser";
-import { useRef } from "react";
 import { useGetPrivateGroups } from "../hooks/useGetPrivateGroups";
 import { useGetOnlineFriends } from "../hooks/useGetOnlineFriends";
+import { useAddFriend } from "../hooks/friend/useAddFriend";
 import { useCreateGroup } from "../hooks/useCreateGroup";
+import { useGetUser } from "../hooks/useGetUser";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
 function Friend({ userID }) {
   const { friends, pendingFriends } = useGetUser(userID);
@@ -30,7 +30,6 @@ function Friend({ userID }) {
         navigate("../privateGroup/" + doc.id + "/" + friendID, {
           replace: true,
         });
-        //openPrivateGroup(userID, friendID, privateGroups);
       });
     } else {
       navigate("../privateGroup/" + privateGroups[friendID] + "/" + friendID, {

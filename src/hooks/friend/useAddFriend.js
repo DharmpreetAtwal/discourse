@@ -1,5 +1,5 @@
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "../../config/firebase";
 
 export const useAddFriend = () => {
   const addFriend = async (userID, friend) => {
@@ -14,13 +14,6 @@ export const useAddFriend = () => {
     await updateDoc(friendDocRef, {
       friends: arrayUnion(userID),
     });
-
-    /*setFriends([...friends, friend]);
-    setPendingFriends(
-      pendingFriends.filter(function (item) {
-        item != friend;
-      })
-    );*/
   };
 
   return { addFriend };

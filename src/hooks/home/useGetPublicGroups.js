@@ -1,6 +1,6 @@
 import { query } from "firebase/database";
 import { collection, doc, getDoc, getDocs, where } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "../../config/firebase";
 
 export const useGetPublicGroups = () => {
   const getPublicGroups = async (userID) => {
@@ -15,8 +15,6 @@ export const useGetPublicGroups = () => {
     const qSnapshot = await getDocs(queryPublicGroup);
 
     qSnapshot.forEach((group) => {
-      console.log(group.id);
-
       if (group.id) {
         const groupMap = {};
         groupMap.id = group.id;
@@ -35,23 +33,6 @@ export const useGetPublicGroups = () => {
 
         promiseList.push(getDoc(latestMessageDoc));
       }
-
-      /*if (group.data().latestMessage && group.id !== "undefined") {
-        const latestMessageDoc = doc(
-          db,
-          "groups/" +
-            group.id +
-            "/groupMessages/" +
-            group.data().latestMessage.id
-        );
-
-        const groupMap = {};
-        groupMap.id = group.id;
-        groupMap.data = group.data();
-        groupList.push(groupMap);
-
-        promiseList.push(getDoc(latestMessageDoc));
-      }*/
     });
 
     const promises = await Promise.all(promiseList);
@@ -59,7 +40,6 @@ export const useGetPublicGroups = () => {
       groupList[index].latestMessage = latestMessage;
     });
 
-    console.log(groupList);
     return groupList;
   };
 

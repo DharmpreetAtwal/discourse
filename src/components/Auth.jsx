@@ -5,6 +5,7 @@ import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useSetIsOnline } from "../hooks/useSetIsOnline";
+import useSetGroupLastOpenByUser from "../hooks/useSetGroupLastOpenByUser";
 
 const cookies = new Cookies();
 
@@ -46,6 +47,7 @@ export const Auth = ({ setIsAuth, setUserID }) => {
       }
 
       setIsOnline(docRef.id, true);
+      // onValue?????
 
       const userIsOnlineRef = ref(rtDB, docRef.id + "/isOnline");
       onDisconnect(userIsOnlineRef).set(false);

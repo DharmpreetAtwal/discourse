@@ -5,7 +5,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "../../config/firebase";
 
 export const useSendMessage = () => {
   const sendMessage = async (userID, groupID, message) => {
