@@ -9,6 +9,7 @@ import { useSetIsOnline } from "../hooks/useSetIsOnline";
 import { useGetPublicGroups } from "../hooks/home/useGetPublicGroups";
 import { useCreateGroup } from "../hooks/useCreateGroup";
 import { useSetOpenGroup } from "../hooks/useSetOpenGroup";
+import useSetGroupLastOpenByUser from "../hooks/useSetGroupLastOpenByUser";
 
 const cookies = new Cookies();
 
@@ -21,10 +22,12 @@ function Home({ userID, setIsAuth }) {
   const { getPublicGroups } = useGetPublicGroups();
   const { createGroup } = useCreateGroup();
   const { setOpenGroup } = useSetOpenGroup();
+  const { setGroupLastOpenByUser } = useSetGroupLastOpenByUser();
 
   const navigateGroup = (groupID) => {
     if (groupID !== null) {
       setOpenGroup(userID, groupID);
+      setGroupLastOpenByUser(userID, groupID);
       navigate("/group/" + groupID);
     }
   };
@@ -62,18 +65,16 @@ function Home({ userID, setIsAuth }) {
   const isLatestMessageRead = (group) => {
     const lastOpened = group.data.lastOpenedByUser[userID];
     if (lastOpened) {
-      //try {
       if (group.latestMessage) {
         const latestMessageTime = group.latestMessage.data().createdAt.toDate();
         return latestMessageTime.getTime() < lastOpened.toDate().getTime();
+      } else {
+        console.log("No Latest Msg");
       }
 
-      //} catch (error) {
-      //  console.error(group.id + " doesn't have latestMessage");
-      //  console.log(group.data);
-      //}
-
       // If the user has opened the group after the latest msg was sent, return true
+    } else {
+      console.log("User has never opened before");
     }
     return false;
   };

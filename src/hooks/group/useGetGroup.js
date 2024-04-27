@@ -10,7 +10,6 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import useSetGroupLastOpenByUser from "../useSetGroupLastOpenByUser";
 
 export const useGetGroup = (userID, groupID) => {
   const [members, setMembers] = useState([]);

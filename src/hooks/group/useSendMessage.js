@@ -6,8 +6,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import useSetGroupLastOpenByUser from "../useSetGroupLastOpenByUser";
 
 export const useSendMessage = () => {
+  const { setGroupLastOpenByUser } = useSetGroupLastOpenByUser();
+
   const sendMessage = async (userID, groupID, message) => {
     const groupMessagesCollection = collection(
       db,
@@ -25,6 +28,8 @@ export const useSendMessage = () => {
       await updateDoc(groupDoc, {
         latestMessage: docRef,
       });
+
+      setGroupLastOpenByUser(userID, groupID);
     }
   };
 

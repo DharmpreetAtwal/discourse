@@ -5,6 +5,7 @@ import { useAddMember } from "../hooks/group/useAddMember";
 import { useSendMessage } from "../hooks/group/useSendMessage";
 import { useSetOpenGroup } from "../hooks/useSetOpenGroup";
 import useSetGroupLastOpenByUser from "../hooks/useSetGroupLastOpenByUser";
+import useGetOpenGroup from "../hooks/useGetOpenGroup";
 
 function Group({ userID, isPrivate }) {
   const userMessageInputRef = useRef("");
@@ -19,17 +20,30 @@ function Group({ userID, isPrivate }) {
   const navigate = useNavigate();
   const { setOpenGroup } = useSetOpenGroup();
   const { setGroupLastOpenByUser } = useSetGroupLastOpenByUser();
+  const { getOpenGroup } = useGetOpenGroup();
 
   const handleBtnHome = () => {
     setOpenGroup(userID, "");
-    setGroupLastOpenByUser(userID, groupID);
     navigate("/home");
   };
 
   const handleBtnSubmit = async (e) => {
     e.preventDefault();
     sendMessage(userID, groupID, userMessageInputRef.current.value);
+    updateOpenGroupMembers();
     userMessageInputRef.current.value = "";
+  };
+
+  const updateOpenGroupMembers = () => {
+    members.forEach(async (member) => {
+      let group = await getOpenGroup(member);
+
+      // Only update lastOpened for person who is not sending message
+      // Excludes case that is handled in sendMessage
+      if (member !== userID && group === groupID) {
+        setGroupLastOpenByUser(member, groupID);
+      }
+    });
   };
 
   const handleBtnAddMember = () => {
