@@ -13,7 +13,7 @@ import useSetGroupLastOpenByUser from "../hooks/useSetGroupLastOpenByUser";
 
 const cookies = new Cookies();
 
-function Home({ userID, setIsAuth }) {
+function Home({ userID, setIsAuth, displayName, photoURL }) {
   const [publicGroups, setPublicGroups] = useState([]);
   const groupIDInputRef = useRef(null);
 
@@ -83,8 +83,10 @@ function Home({ userID, setIsAuth }) {
     <>
       <div className="flex flex-col">
         <div className="flex flex-row bg-orange-500 h-[10vh] min-w-full p-4 justify-between">
-          <div></div>
-          <div className="bg-blue-300">{userID}</div>
+          <div>
+            <img className="max-h-full" src={`${photoURL}`} />
+          </div>
+          <div className="bg-blue-300">{displayName}</div>
           <div className="flex">
             <div className="bg-blue-500 w-3 h-3"></div>
             <button onClick={handleSignOut} className="bg-red-500">

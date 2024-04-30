@@ -4,18 +4,18 @@ import { useGetPrivateGroups } from "../hooks/useGetPrivateGroups";
 import { useGetOnlineFriends } from "../hooks/useGetOnlineFriends";
 import { useAddFriend } from "../hooks/friend/useAddFriend";
 import { useCreateGroup } from "../hooks/useCreateGroup";
-import { useGetUser } from "../hooks/useGetUser";
+import { useGetUserFriends } from "../hooks/useGetUserFriends";
 import { useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import useGetUserInfo from "../hooks/useGetUserInfo";
 
 function Friend({ userID }) {
-  const { friends, pendingFriends } = useGetUser(userID);
+  const { friends, pendingFriends } = useGetUserFriends(userID);
   const { onlineFriends } = useGetOnlineFriends(friends);
   const { privateGroups } = useGetPrivateGroups(userID);
   const { sendFriendRequest } = useSendFriendRequest();
-  const { openPrivateGroup } = useOpenPrivateGroup();
-  const { addFriend } = useAddFriend();
   const { createGroup } = useCreateGroup();
+  const { addFriend } = useAddFriend();
   const navigate = useNavigate();
 
   const sendFriendRequestInputRef = useRef(null);
@@ -44,28 +44,31 @@ function Friend({ userID }) {
         <h1 className="bg-green-200 text-blue-500 text-3xl text-center">
           Friends:
         </h1>
-        {friends.map((friendID, index) => {
+        {friends.map((friend, index) => {
           return (
-            <div key={friendID}>
-              <h1 className="bg-yellow-500">
-                {privateGroups[friendID] == null ? (
-                  <button
-                    onClick={() => handleOpenPrivateGroupBtn(friendID)}
-                    className="bg-blue-500"
-                  >
-                    {friendID}
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleOpenPrivateGroupBtn(friendID)}
-                    className={
-                      onlineFriends[index] ? "bg-green-500" : "bg-slate-500"
-                    }
-                  >
-                    {friendID}
-                  </button>
-                )}
-              </h1>
+            <div className="w-full flex flex-row h-12" key={friend.uid}>
+              <img className="h-full" src={friend.photoURL} />
+              {privateGroups[friend.uid] == null ? (
+                <button
+                  onClick={() => handleOpenPrivateGroupBtn(friend.uid)}
+                  className={
+                    "w-full h-full text-xl " +
+                    (onlineFriends[index] ? "bg-blue-500" : "bg-slate-500")
+                  }
+                >
+                  {friend.displayName}
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleOpenPrivateGroupBtn(friend.uid)}
+                  className={
+                    "w-full h-12 text-xl " +
+                    (onlineFriends[index] ? "bg-green-500" : "bg-slate-500")
+                  }
+                >
+                  {friend.displayName}
+                </button>
+              )}
             </div>
           );
         })}

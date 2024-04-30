@@ -10,10 +10,12 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import useGetUserInfo from "../useGetUserInfo";
 
 export const useGetGroup = (userID, groupID) => {
   const [members, setMembers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const { getUserInfo } = useGetUserInfo();
 
   const groupDoc = doc(db, "groups", groupID);
   const groupMessagesCollection = collection(
@@ -23,8 +25,6 @@ export const useGetGroup = (userID, groupID) => {
 
   useEffect(() => {
     const unsubscribe1 = onSnapshot(groupDoc, (snapshot) => {
-      setMembers(snapshot.data().members);
-
       if (snapshot.data().members.includes(userID)) {
         const unsubscribe2 = onSnapshot(groupMessagesCollection, (snapshot) => {
           let array = [];
@@ -35,6 +35,15 @@ export const useGetGroup = (userID, groupID) => {
           });
 
           setMessages(array);
+        });
+
+        let membersArray = [];
+        snapshot.data().members.forEach(async (member) => {
+          membersArray.push(getUserInfo(member));
+        });
+
+        Promise.all(membersArray).then((evaluated) => {
+          setMembers(evaluated);
         });
 
         return () => {

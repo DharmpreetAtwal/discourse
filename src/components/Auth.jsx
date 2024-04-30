@@ -8,9 +8,9 @@ import { useSetIsOnline } from "../hooks/useSetIsOnline";
 
 const cookies = new Cookies();
 
-export const Auth = ({ setIsAuth, setUserID }) => {
+export const Auth = ({ setIsAuth, setUserID, setDisplayName, setPhotoURL }) => {
   const navigate = useNavigate();
-  const { setIsOnline, userIsOnlineRef } = useSetIsOnline();
+  const { setIsOnline } = useSetIsOnline();
 
   const signInGoogle = async () => {
     try {
@@ -21,6 +21,8 @@ export const Auth = ({ setIsAuth, setUserID }) => {
 
       setIsAuth(true);
       setUserID(info.user.uid);
+      setDisplayName(info.user.displayName);
+      setPhotoURL(info.user.photoURL);
 
       const docRef = doc(db, "users", info.user.uid);
       const docSnap = await getDoc(docRef);
@@ -36,17 +38,22 @@ export const Auth = ({ setIsAuth, setUserID }) => {
       if (docSnap.exists()) {
         await updateDoc(docRef, {
           pendingFriends: arrayUnion(),
+          displayName: info.user.displayName,
+          photoURL: info.user.photoURL,
         });
       } else {
         await setDoc(docRef, {
           email: info.user.email,
           pendingFriends: [],
           friends: [],
+          displayName: info.user.displayName,
+          photoURL: info.user.photoURL,
         });
       }
 
       setIsOnline(docRef.id, true);
 
+      // Reset isOnline and openGroup upon disconnect
       const userIsOnlineRef = ref(rtDB, docRef.id + "/isOnline");
       const userOpenGroupRef = ref(rtDB, docRef.id + "/openGroup");
       onDisconnect(userIsOnlineRef).set(false);

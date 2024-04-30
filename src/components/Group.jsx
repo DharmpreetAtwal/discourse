@@ -22,6 +22,31 @@ function Group({ userID, isPrivate }) {
   const { setGroupLastOpenByUser } = useSetGroupLastOpenByUser();
   const { getOpenGroup } = useGetOpenGroup();
 
+  const isUserMember = () => {
+    let isMember = false;
+
+    members.forEach((member) => {
+      if (member.uid === userID) {
+        isMember = true;
+      }
+    });
+
+    return isMember;
+  };
+
+  const getMember = (userID) => {
+    let member = {};
+
+    members.forEach((mem) => {
+      if (mem.uid === userID) {
+        member = mem;
+      }
+    });
+
+    return member;
+  };
+
+  // Avoid using setGroupLastOpenByUser() on Home Btn click, causes issues
   const handleBtnHome = () => {
     setOpenGroup(userID, "");
     navigate("/home");
@@ -36,12 +61,12 @@ function Group({ userID, isPrivate }) {
 
   const updateOpenGroupMembers = () => {
     members.forEach(async (member) => {
-      let group = await getOpenGroup(member);
+      let group = await getOpenGroup(member.uid);
 
       // Only update lastOpened for person who is not sending message
       // Excludes case that is handled in sendMessage
-      if (member !== userID && group === groupID) {
-        setGroupLastOpenByUser(member, groupID);
+      if (member.uid !== userID && group === groupID) {
+        setGroupLastOpenByUser(member.uid, groupID);
       }
     });
   };
@@ -78,7 +103,7 @@ function Group({ userID, isPrivate }) {
             </button>
           </div>
         </div>
-        {members.includes(userID) ? (
+        {isUserMember() ? (
           <div className="flex flex-row bg-slate-600 relative h-[90vh] w-full">
             <div
               className={
@@ -89,24 +114,32 @@ function Group({ userID, isPrivate }) {
               {messages.length > 0 &&
                 messages
                   .sort((a, b) => a.createdAt.toDate() - b.createdAt.toDate())
-                  .map((msg) => (
-                    <div
-                      key={msg.createdAt}
-                      className="flex flex-row justify-between w-full bg-amber-500 mb-1"
-                    >
-                      <div>
-                        <p> {msg.sentBy} </p>
-                      </div>
+                  .map((msg) => {
+                    const sender = getMember(msg.sentBy);
 
-                      <div>
-                        <p>{msg.message}</p>
-                      </div>
+                    return (
+                      <div
+                        key={msg.createdAt}
+                        className="flex flex-row w-full h-14 bg-amber-500 mb-1 items-center justify-between "
+                      >
+                        <div className="flex flex-row h-5/6 items-center justify-center">
+                          <img
+                            className="h-full rounded-2xl m-1"
+                            src={sender.photoURL}
+                          />
+                          <p> {sender.displayName} </p>
+                        </div>
 
-                      <div>
-                        <p> {msg.createdAt.toDate().toString()} </p>
+                        <div>
+                          <p>{msg.message}</p>
+                        </div>
+
+                        <div>
+                          <p> {msg.createdAt.toDate().toString()} </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
             </div>
 
             {isSidebarVisible && (
@@ -118,9 +151,21 @@ function Group({ userID, isPrivate }) {
                   <p> Current Members: </p>
                   {members.map((member) => {
                     return (
-                      <p key={member} className="bg-emerald-500">
-                        {member}
-                      </p>
+                      <div
+                        className="flex flex-row w-full h-12 mb-2 justify-center items-center"
+                        key={member.uid}
+                      >
+                        <div className="w-1/6 h-full rounded-full">
+                          <img
+                            className="rounded-full"
+                            src={`${member.photoURL}`}
+                          />
+                        </div>
+
+                        <div className="flex w-5/6 items-center justify-center bg-green-500 p-2 text-2xl">
+                          {member.displayName}
+                        </div>
+                      </div>
                     );
                   })}
                 </div>

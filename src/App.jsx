@@ -18,6 +18,8 @@ const cookies = new Cookies();
 function App() {
   const [isAuth, setIsAuth] = useState(cookies.get("token-auth"));
   const [userID, setUserID] = useState(cookies.get("uid"));
+  const [displayName, setDisplayName] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
 
   // A function that adds an attribute to all docs in user collection
   /*useEffect(() => {
@@ -39,11 +41,25 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<Auth setIsAuth={setIsAuth} setUserID={setUserID} />}
+            element={
+              <Auth
+                setIsAuth={setIsAuth}
+                setUserID={setUserID}
+                setDisplayName={setDisplayName}
+                setPhotoURL={setPhotoURL}
+              />
+            }
           ></Route>
           <Route
             path="home"
-            element={<Home userID={userID} setIsAuth={setIsAuth} />}
+            element={
+              <Home
+                userID={userID}
+                setIsAuth={setIsAuth}
+                displayName={displayName}
+                photoURL={photoURL}
+              />
+            }
           ></Route>
           <Route
             path="group/:groupID"
