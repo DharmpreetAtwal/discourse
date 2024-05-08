@@ -15,6 +15,8 @@ const cookies = new Cookies();
 
 function Home({ userID, setIsAuth, displayName, photoURL }) {
   const [publicGroups, setPublicGroups] = useState([]);
+  const [fetchedPublicGroups, setFetchedPublicGroups] = useState(false);
+
   const groupIDInputRef = useRef(null);
 
   const navigate = useNavigate();
@@ -36,6 +38,7 @@ function Home({ userID, setIsAuth, displayName, photoURL }) {
     const handleFetch = async () => {
       const output = await getPublicGroups(userID);
       setPublicGroups(output);
+      setFetchedPublicGroups(true);
     };
 
     handleFetch();
@@ -86,9 +89,10 @@ function Home({ userID, setIsAuth, displayName, photoURL }) {
           <div>
             <img className="max-h-full" src={`${photoURL}`} />
           </div>
-          <div className="bg-blue-300">{displayName}</div>
+          <div className="flex bg-blue-300 w-1/5 text-3xl items-center justify-center">
+            <p>{displayName}</p>
+          </div>
           <div className="flex">
-            <div className="bg-blue-500 w-3 h-3"></div>
             <button onClick={handleSignOut} className="bg-red-500">
               Sign Out
             </button>
@@ -97,23 +101,25 @@ function Home({ userID, setIsAuth, displayName, photoURL }) {
 
         <div className="flex flex-row bg-slate-200 h-[90vh] min-w-screen">
           <div className="flex flex-col w-1/3 bg-slate-600">
-            {publicGroups.length > 0 && <Friend userID={userID} />}
+            {fetchedPublicGroups && <Friend userID={userID} />}
           </div>
           <div className="w-2/3 overflow-auto no-scrollbar">
             {publicGroups.map((group) => {
               return (
-                <div className="flex flex-row w-full h-16" key={group.id}>
-                  <div className="bg-purple-500 w-2/3">
+                <div className="flex flex-row w-full h-16 mb-1" key={group.id}>
+                  <div className="flex flex-col bg-purple-500 w-2/3 h-full">
                     {group.id}
                     {isLatestMessageRead(group) ? (
-                      <div>
-                        Last Opened:
-                        {group.data.lastOpenedByUser[userID]
-                          .toDate()
-                          .toString()}
+                      <div className="flex text-neutral-600 bg-amber-500 h-full items-center justify-center">
+                        <p>
+                          Last Opened:{" "}
+                          {group.data.lastOpenedByUser[userID]
+                            .toDate()
+                            .toString()}
+                        </p>
                       </div>
                     ) : (
-                      <div>
+                      <div className="flex bg-emerald-700 text-lime-400 h-full justify-center items-center">
                         New Latest Message from:{" "}
                         {group.latestMessage
                           ? group.latestMessage.data().sentBy

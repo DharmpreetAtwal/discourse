@@ -1,18 +1,15 @@
 import { useSendFriendRequest } from "../hooks/friend/useSendFriendRequest";
 import { useOpenPrivateGroup } from "../hooks/useOpenPrivateGroup";
-import { useGetPrivateGroups } from "../hooks/useGetPrivateGroups";
 import { useGetOnlineFriends } from "../hooks/useGetOnlineFriends";
 import { useAddFriend } from "../hooks/friend/useAddFriend";
 import { useCreateGroup } from "../hooks/useCreateGroup";
 import { useGetUserFriends } from "../hooks/useGetUserFriends";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
-import useGetUserInfo from "../hooks/useGetUserInfo";
+import { useRef } from "react";
 
 function Friend({ userID }) {
-  const { friends, pendingFriends } = useGetUserFriends(userID);
+  const { friends, pendingFriends, privateGroups } = useGetUserFriends(userID);
   const { onlineFriends } = useGetOnlineFriends(friends);
-  const { privateGroups } = useGetPrivateGroups(userID);
   const { sendFriendRequest } = useSendFriendRequest();
   const { createGroup } = useCreateGroup();
   const { addFriend } = useAddFriend();
@@ -46,7 +43,7 @@ function Friend({ userID }) {
         </h1>
         {friends.map((friend, index) => {
           return (
-            <div className="w-full flex flex-row h-12" key={friend.uid}>
+            <div className="w-full flex flex-row h-12 mb-1" key={friend.uid}>
               <img className="h-full" src={friend.photoURL} />
               {privateGroups[friend.uid] == null ? (
                 <button
@@ -91,11 +88,16 @@ function Friend({ userID }) {
         <h1 className="bg-purple-500">Pending Friends</h1>
         {pendingFriends.map((friend) => {
           return (
-            <div key={friend}>
-              <h1 className="bg-blue-500">{friend}</h1>
+            <div className="flex flex-row w-full h-12 mb-1" key={friend.uid}>
+              <img className="h-full" src={friend.photoURL} />
+
+              <h1 className="flex bg-blue-500 text-3xl   w-full h-full items-center justify-center">
+                {friend.displayName}
+              </h1>
+
               <button
-                onClick={() => handleAddFriendButton(friend)}
-                className="bg-orange-500"
+                onClick={() => handleAddFriendButton(friend.uid)}
+                className="w-1/6 h-full bg-orange-500"
               >
                 Add Friend
               </button>

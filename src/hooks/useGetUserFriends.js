@@ -1,4 +1,4 @@
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useEffect, useState } from "react";
 import useGetUserInfo from "./useGetUserInfo";
@@ -6,13 +6,13 @@ import useGetUserInfo from "./useGetUserInfo";
 export const useGetUserFriends = (userID) => {
   const [friends, setFriends] = useState([]);
   const [pendingFriends, setPendingFriends] = useState([]);
+  const [privateGroups, setPrivateGroups] = useState({});
   const { getUserInfo } = useGetUserInfo();
 
   useEffect(() => {
     const userDoc = doc(db, "users", userID);
     const unsubscribe1 = onSnapshot(userDoc, async (snapshot) => {
       if (snapshot.exists()) {
-        //setFriends(snapshot.data().friends);
         let friendsArray = [];
         snapshot.data().friends.forEach((friend) => {
           friendsArray.push(getUserInfo(friend));
@@ -22,7 +22,33 @@ export const useGetUserFriends = (userID) => {
           setFriends(evaluated);
         });
 
-        setPendingFriends(snapshot.data().pendingFriends);
+        let pendingFriendsArray = [];
+        snapshot.data().pendingFriends.forEach((friend) => {
+          pendingFriendsArray.push(getUserInfo(friend));
+        });
+
+        Promise.all(pendingFriendsArray).then((evaluated) => {
+          setPendingFriends(evaluated);
+        });
+
+        let groupArray = [];
+        snapshot.data().privateGroups.forEach((group) => {
+          const groupRef = doc(db, "groups", group);
+          groupArray.push(getDoc(groupRef));
+        });
+
+        let groupMap = {};
+        Promise.all(groupArray).then((evaluated) => {
+          evaluated.forEach((group) => {
+            let friendID = group
+              .data()
+              .members.filter((item) => item != userID)
+              .at(0);
+            groupMap = { ...groupMap, [friendID]: group.id };
+          });
+
+          setPrivateGroups(groupMap);
+        });
       }
     });
 
@@ -31,5 +57,5 @@ export const useGetUserFriends = (userID) => {
     };
   }, []);
 
-  return { friends, pendingFriends };
+  return { friends, pendingFriends, privateGroups };
 };

@@ -1,4 +1,11 @@
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../config/firebase";
 
 export const useCreateGroup = () => {
@@ -10,12 +17,28 @@ export const useCreateGroup = () => {
     const lastOpenedByUserMap = {};
     lastOpenedByUserMap[userID] = serverTimestamp();
 
-    return await addDoc(groupCollectionRef, {
+    const promise = await addDoc(groupCollectionRef, {
       creatorID: userID,
       members: membersArray,
       isPrivate: isPrivate,
       lastOpenedByUser: lastOpenedByUserMap,
     });
+
+    if (isPrivate) {
+      let promiseArray = [];
+      membersArray.forEach(async (member) => {
+        const memberRef = doc(db, "users/" + member);
+        promiseArray.push(
+          updateDoc(memberRef, {
+            privateGroups: arrayUnion(`${promise.id}`),
+          })
+        );
+      });
+
+      Promise.all(promiseArray);
+    }
+
+    return promise;
   };
 
   return { createGroup };
