@@ -85,19 +85,22 @@ function Group({ userID, isPrivate }) {
       <div className="flex flex-col w-full">
         <div className="flex flex-row h-[10vh] bg-sky-500 justify-between">
           <div className="my-auto ml-1">
-            <button className="bg-orange-500" onClick={handleBtnHome}>
+            <button
+              className="bg-orange-500 p-2 rounded-lg text-2xl drop-shadow-md"
+              onClick={handleBtnHome}
+            >
               Home
             </button>
           </div>
-          <div className="my-auto">
-            <h1 className="bg-pink-500">{groupID}</h1>
+          <div className="my-auto rounded-2xl text-4xl bg-pink-500 px-4 py-2">
+            {groupID}
           </div>
           <div className="my-auto">
             <button
               onClick={handleBtnOpenSidebar}
               id="sidebarToggle"
               type="button"
-              className="bg-purple-500"
+              className="bg-purple-500 text-2xl mx-2 p-2 rounded-lg shadow-sm"
             >
               Open Sidebar
             </button>
@@ -120,19 +123,17 @@ function Group({ userID, isPrivate }) {
                     return (
                       <div
                         key={msg.createdAt}
-                        className="flex flex-row w-full h-14 bg-amber-500 mb-1 items-center justify-between "
+                        className="flex flex-row w-auto h-14 bg-amber-500 m-2 p-1 items-center justify-between rounded-3xl "
                       >
-                        <div className="flex flex-row h-5/6 items-center justify-center">
+                        <div className="flex flex-row h-5/6 items-center justify-center text-xl">
                           <img
-                            className="h-full rounded-2xl m-1"
+                            className="h-full rounded-2xl mx-2"
                             src={sender.photoURL}
                           />
                           <p> {sender.displayName} </p>
                         </div>
 
-                        <div>
-                          <p>{msg.message}</p>
-                        </div>
+                        <div className="text-lg">{msg.message}</div>
 
                         <div>
                           <p> {msg.createdAt.toDate().toString()} </p>

@@ -87,13 +87,19 @@ function Home({ userID, setIsAuth, displayName, photoURL }) {
       <div className="flex flex-col">
         <div className="flex flex-row bg-orange-500 h-[10vh] min-w-full p-4 justify-between">
           <div>
-            <img className="max-h-full" src={`${photoURL}`} />
+            <img
+              className="max-h-full shadow-xl rounded-full"
+              src={`${photoURL}`}
+            />
           </div>
-          <div className="flex bg-blue-300 w-1/5 text-3xl items-center justify-center">
+          <div className="flex bg-blue-300 w-1/5 rounded-2xl shadow-xl text-3xl items-center justify-center">
             <p>{displayName}</p>
           </div>
           <div className="flex">
-            <button onClick={handleSignOut} className="bg-red-500">
+            <button
+              onClick={handleSignOut}
+              className="rounded-3xl px-4 drop-shadow-md text-3xl bg-red-500"
+            >
               Sign Out
             </button>
           </div>
@@ -103,51 +109,56 @@ function Home({ userID, setIsAuth, displayName, photoURL }) {
           <div className="flex flex-col w-1/3 bg-slate-600">
             {fetchedPublicGroups && <Friend userID={userID} />}
           </div>
-          <div className="w-2/3 overflow-auto no-scrollbar">
+          <div className="flex flex-col w-2/3 h-full overflow-auto items-center">
             {publicGroups.map((group) => {
               return (
-                <div className="flex flex-row w-full h-16 mb-1" key={group.id}>
-                  <div className="flex flex-col bg-purple-500 w-2/3 h-full">
+                <div className="flex flex-row w-11/12 m-1" key={group.id}>
+                  <div className="flex flex-row bg-purple-500 justify-between items-center w-full px-3 h-16 rounded-l-3xl text-2xl shadow-md">
                     {group.id}
                     {isLatestMessageRead(group) ? (
-                      <div className="flex text-neutral-600 bg-amber-500 h-full items-center justify-center">
+                      <div className="flex text-neutral-700 bg-amber-500 h-1/2 items-center justify-center px-2 rounded-lg">
                         <p>
-                          Last Opened:{" "}
                           {group.data.lastOpenedByUser[userID]
                             .toDate()
-                            .toString()}
+                            .toDateString()
+                            .toString() +
+                            " " +
+                            group.data.lastOpenedByUser[userID]
+                              .toDate()
+                              .toLocaleTimeString()
+                              .toString()}
                         </p>
                       </div>
                     ) : (
-                      <div className="flex bg-emerald-700 text-lime-400 h-full justify-center items-center">
-                        New Latest Message from:{" "}
+                      <div className="flex bg-emerald-700 text-lime-400 h-1/2 justify-center items-center px-2 rounded-lg text-xl">
+                        New:{" "}
                         {group.latestMessage
                           ? group.latestMessage.data().sentBy
-                          : "NONE"}
+                          : "NO ONE"}
                       </div>
                     )}
                   </div>
                   <button
-                    className="bg-green-500 w-1/3"
+                    className="bg-green-500 w-1/6 h-full rounded-r-3xl text-2xl shadow-lg"
                     onClick={() => navigateGroup(group.id)}
                   >
-                    Join Public Group
+                    Join
                   </button>
                 </div>
               );
             })}
-            <div className="w-9 h-9">
+            <div className="w-1/3 h-9">
               <button
                 onClick={handleCreateGroupBtn}
-                className="bg-orange-500 w-full h-full"
+                className="bg-lime-500 rounded-3xl drop-shadow-md w-full h-full"
               >
-                +
+                + Add a New Group
               </button>
             </div>
           </div>
         </div>
       </div>
-      <div>
+      {/*<div>
         <h2> Enter Your GroupID Name</h2>
         <input ref={groupIDInputRef} className="bg-orange-500" />
         <button
@@ -156,7 +167,7 @@ function Home({ userID, setIsAuth, displayName, photoURL }) {
         >
           Enter Discourse
         </button>
-      </div>
+      </div>*/}
     </>
   );
 }

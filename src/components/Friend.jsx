@@ -38,32 +38,51 @@ function Friend({ userID }) {
   return (
     <div>
       <div className="mb-2">
-        <h1 className="bg-green-200 text-blue-500 text-3xl text-center">
-          Friends:
-        </h1>
         {friends.map((friend, index) => {
           return (
-            <div className="w-full flex flex-row h-12 mb-1" key={friend.uid}>
-              <img className="h-full" src={friend.photoURL} />
+            <div
+              className="w-full flex flex-row h-16 mb-1 p-2 bg-slate-100 justify-between items-center"
+              key={friend.uid}
+            >
+              <div className="flex flex-row h-full">
+                <img
+                  className="h-full rounded-full mr-2"
+                  src={friend.photoURL}
+                />{" "}
+                <div className="flex flex-col">
+                  {friend.displayName}
+                  <h1
+                    className={
+                      onlineFriends[index]
+                        ? "text-emerald-500 font-bold"
+                        : "text-red-500 italic"
+                    }
+                  >
+                    {" "}
+                    {onlineFriends[index] ? "Online" : "Offline"}{" "}
+                  </h1>
+                </div>
+              </div>
+
               {privateGroups[friend.uid] == null ? (
                 <button
                   onClick={() => handleOpenPrivateGroupBtn(friend.uid)}
                   className={
-                    "w-full h-full text-xl " +
+                    "w-1/5 h-3/4 text-xl rounded-lg m-1 shadow-md " +
                     (onlineFriends[index] ? "bg-blue-500" : "bg-slate-500")
                   }
                 >
-                  {friend.displayName}
+                  Chat
                 </button>
               ) : (
                 <button
                   onClick={() => handleOpenPrivateGroupBtn(friend.uid)}
                   className={
-                    "w-full h-12 text-xl " +
+                    "w-1/6 h-12 text-xl " +
                     (onlineFriends[index] ? "bg-green-500" : "bg-slate-500")
                   }
                 >
-                  {friend.displayName}
+                  {onlineFriends[index] ? "Online!" : "offline"}
                 </button>
               )}
             </div>
